@@ -10,23 +10,23 @@ Les solutions existantes sont :
 
 *Ce n'est pas très 21ème siècle.*
 
-Ce site n'a pas pour but principal de s'imposer au sein des grandes compétitions.
-Les clos de pétanque ont l'habitude d'organiser des concours entre sociétaires et les tirages aléatoires, les créations de tableaux, le calcul des points, etc. peut être une perte de temps démotivante. Ce site offre une solution rapide et efficace pour organiser ces évènements.
+Les clos de pétanque ont l'habitude d'organiser des concours entre sociétaires et les tirages aléatoires, les créations de tableaux, le calcul des points, etc. peuvent être une perte de temps démotivante. Ce site offrira une solution rapide et efficace pour organiser ces évènements.
 
 ## Fonctionnalités
 
 - Enregistrer des joueurs.
-- Enregistrer des tournois.
-- Faire des statistiques par joueur.
 
-Pour le moment, le site est plutôt conçu pour qu'un organisateur de concours (appartenant à un clos, admettons) vienne y préparer l'organisation d'un futur concours. Il n'est pas fait pour que les joueurs participants s'y inscrivent.
+## A venir
+
+- Ajouter les joueurs à un concours : création d'équipes, tirage aléatoire
+- Démarrer le concours
+- Inscrire les scores, qualifier les équipes
+- Statistiques
 
 ## Besoins
 
-- Améliorer le design !
+- Améliorer le design
 - Idées de Fonctionnalités.
-- Technologie est mieux adaptée (MEAN stack, etc.)
-*n'hésitez pas à m'en faire part*
 
 ## Fiction
 
