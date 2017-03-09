@@ -1,0 +1,11 @@
+/* C'est le fichier principal, c'est lui qui sera appelé par votre page App.vue */
+/* On importe bootstrap */
+@import "./bootstrap/bootstrap-custom";
+
+.side-menu-container ul.nav {
+  width: 100%;
+}
+
+.navbar-collapse {
+  padding: 0!important;
+}

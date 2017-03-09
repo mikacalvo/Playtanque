@@ -1,0 +1,10 @@
+/* Ce fichier permet de personnaliser bootstrap à votre guise, voici un exemple de surcharge du fichier par défaut */
+
+/* La je modifie la couleur principale */
+$brand-primary: #5a3966;
+
+$icon-font-path: "~bootstrap-sass/assets/fonts/bootstrap/";
+
+
+/* J'importe enfin le fichier de variables par défaut de bootstrap qui va permettre de définir les variables que je n'ai pas surchargées */
+@import "node_modules/bootstrap-sass/assets/stylesheets/bootstrap/variables";
