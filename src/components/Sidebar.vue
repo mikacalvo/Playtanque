@@ -1,5 +1,5 @@
 <template>
-  <div class="side-menu">
+  <div class="side-menu sidebar">
     <nav class="navbar navbar-default" role="navigation">
       <div class="navbar-header">
         <div class="brand-wrapper">
@@ -11,8 +11,8 @@
           </button>
 
           <div class="brand-name-wrapper">
-            <a class="navbar-brand" href="#">
-              Liste de joueurs / d'équipes
+            <a class="navbar-brand" @click="saveJson">
+              Liste de players / d'équipes
             </a>
           </div>
 
@@ -36,16 +36,16 @@
       </div>
 
       <div class="side-menu-container">
-        <ul class="nav navbar-nav joueur-list">
+        <ul class="nav navbar-nav players-list">
           <li>
             <form class="navbar-form" v-on:submit.prevent>
               <div class="form-group">
-                <input type="text" class="form-control new-todo" placeholder="(Nom joueur / équipe)" v-model="newJoueur">
+                <input class="form-control new-player" autofocus autocomplete="off" placeholder="(Nom player / équipe)" v-model="newPlayer">
               </div>
-              <button class="btn btn-default" v-on:click="add"><span class="glyphicon glyphicon-plus"></span></button>
+              <button class="btn btn-default" v-on:click="addPlayer"><span class="glyphicon glyphicon-plus"></span></button>
             </form>
           </li>
-          <joueur v-for="(joueur, index) in joueurs" :key="index" :joueur="joueur"></joueur>
+          <player v-for="(player, index) in players" :key="index" :player="player"></player>
         </ul>
       </div>
     </nav>
@@ -53,53 +53,49 @@
 </template>
 
 <script>
-  import { mapMutations } from 'vuex'
-  import Joueur from './Joueur.vue'
+  import { mapMutations, mapGetters } from 'vuex'
+  import Player from './Player.vue'
 
   const filters = {
-    all: joueurs => joueurs,
-    active: joueurs => joueurs.filter(todo => !todo.done),
-    completed: joueurs => joueurs.filter(todo => todo.done)
+    all: players => players,
+    active: players => players.filter(player => !player.done),
+    completed: players => players.filter(player => player.done)
   }
 
   export default {
-    components: { Joueur },
+    components: { Player },
     data () {
       return {
         visibility: 'all',
-        filters: filters
+        filters: filters,
+        newPlayer: ''
       }
     },
-    computed: {
-      joueurs () {
-        return this.$store.state.joueurs
-      },
-      allChecked () {
-        return this.joueurs.every(todo => todo.done)
-      },
-      filteredJoueurs () {
-        return filters[this.visibility](this.joueurs)
-      },
-      remaining () {
-        return this.joueurs.filter(todo => !todo.done).length
-      }
-    },
+    computed: mapGetters({
+      players: 'allPlayers'
+    }),
     methods: {
-      addJoueur (e) {
-        var text = e.target.value
-        if (text.trim()) {
-          this.$store.commit('addJoueur', { text })
+      addPlayer (e) {
+        var name = this.newPlayer
+        if (name.trim()) {
+          this.$store.commit('addPlayer', { name })
         }
-        e.target.value = ''
+        this.newPlayer = ''
       },
       ...mapMutations([
         'toggleAll',
         'clearCompleted'
-      ])
+      ]),
+      saveJson () {
+        console.log(JSON.parse(JSON.stringify(this.players)))
+      }
     },
     filters: {
       pluralize: (n, w) => n === 1 ? w : (w + 's'),
       capitalize: s => s.charAt(0).toUpperCase() + s.slice(1)
+    },
+    created () {
+      this.$store.dispatch('getAllPlayers')
     }
   }
 </script>
@@ -397,4 +393,31 @@
       margin: 0;
     }
   }
+
+  .new-player,
+  .edit {
+    position: relative;
+    margin: 0;
+    width: 100%;
+    font-size: 18px;
+    font-family: inherit;
+    font-weight: inherit;
+    line-height: 1.4em;
+    border: 0;
+    color: inherit;
+    padding: 6px;
+    border: 1px solid #999;
+    box-shadow: inset 0 -1px 5px 0 rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .new-player {
+    padding: 16px;
+    border: none;
+    background: rgba(0, 0, 0, 0.003);
+    box-shadow: inset 0 -2px 1px rgba(0,0,0,0.03);
+  }
+
 </style>
