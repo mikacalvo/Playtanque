@@ -1,25 +1,33 @@
 <template>
-  <div class="consolante" id="consolante">
-    <nav class="navbar navbar-default">
-      <div class="container">
-        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-          <ul class="nav navbar-nav">
-            <li><a v-on:click="currentView = 'ConcoursParametrage'" href="#">Paramétrage</a></li>
-            <li><a v-on:click="currentView = 'ConcoursPlay'" href="#">Concours</a></li>
-          </ul>
+  <div class="row">
+    <sidebar></sidebar>
+    <div class="container-fluid">
+      <div class="side-body">
+        <div class="consolante" id="consolante">
+          <nav class="navbar navbar-default">
+            <div class="container">
+              <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                  <li><a v-on:click="currentView = 'ConcoursParametrage'" href="#">Paramétrage</a></li>
+                  <li><a v-on:click="currentView = 'ConcoursPlay'" href="#">Concours</a></li>
+                </ul>
+              </div>
+            </div>
+          </nav>
+          <div>
+            <keep-alive>
+                <component v-bind:is="currentView" :type="'consolante'"></component>
+            </keep-alive>
+          </div>
         </div>
       </div>
-    </nav>
-    <div>
-      <keep-alive>
-          <component v-bind:is="currentView" :type="'consolante'"></component>
-      </keep-alive>
     </div>
   </div>
 </template>
 
 <script>
   import ConcoursParametrage from './ConcoursParametrage'
+  import Sidebar from './Sidebar'
 
   export default {
     name: 'consolante',
@@ -29,7 +37,8 @@
       }
     },
     components: {
-      ConcoursParametrage
+      ConcoursParametrage,
+      Sidebar
     }
   }
 </script>

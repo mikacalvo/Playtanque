@@ -1,42 +1,42 @@
-import consolante from '../../api/consolante'
-// import * as types from '../mutation-types'
+const STORAGE_KEY = 'playtanque_players'
 
-console.log(JSON.parse(window.localStorage.getItem('playtanque_players') !== 'undefined' ? window.localStorage.getItem('playtanque_players') : '[]'))
+import playersapi from '../../api/players'
 
-// initial state
-// shape: [{ name, done }]
-const state = window.localStorage.getItem('playtanque_players') !== 'undefined' ? JSON.parse(window.localStorage.getItem('playtanque_players')) : {
-  all: []
+// for testing
+if (navigator.userAgent.indexOf('PhantomJS') > -1) {
+  window.localStorage.clear()
 }
 
-// getters
+const state = {
+  players: JSON.parse(window.localStorage.getItem(STORAGE_KEY) || '[]')
+}
+
 const getters = {
-  allPlayers: state => state.all
+  allPlayers: state => state.players
 }
 
-// actions
 const actions = {
   getAllPlayers ({ commit }) {
-    consolante.getPlayers(teams => {
-      commit('setPlayers', { teams })
+    playersapi.getPlayers(players => {
+      commit('setPlayers', { players })
     })
   }
 }
 
 const mutations = {
-  setPlayers (state, { teams }) {
-    state.all = teams
+  setPlayers (state, { players }) {
+    state.players = players
   },
 
-  addPlayer (state, { name }) {
-    state.all.push({
-      name,
+  addPlayer (state, { text }) {
+    state.players.push({
+      text,
       done: false
     })
   },
 
   deletePlayer (state, { player }) {
-    state.all.splice(state.all.indexOf(player), 1)
+    state.players.splice(state.players.indexOf(player), 1)
   },
 
   togglePlayer (state, { player }) {
@@ -44,17 +44,17 @@ const mutations = {
   },
 
   editPlayer (state, { player, value }) {
-    player.name = value
+    player.text = value
   },
 
   toggleAll (state, { done }) {
-    state.all.forEach((player) => {
+    state.players.forEach((player) => {
       player.done = done
     })
   },
 
   clearCompleted (state) {
-    state.all = state.all.filter(player => !player.done)
+    state.players = state.players.filter(player => !player.done)
   }
 }
 

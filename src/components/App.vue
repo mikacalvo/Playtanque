@@ -14,14 +14,7 @@
           <menuconcours></menuconcours>
         </div>
       </nav>
-      <div class="row">
-        <sidebar></sidebar>
-        <div class="container-fluid">
-          <div class="side-body">
-            <router-view></router-view>
-          </div>
-        </div>
-      </div>
+      <router-view></router-view>
     </div>
   </div>
 </template>
@@ -29,13 +22,11 @@
 <script>
   import Hello from './Hello'
   import Menuconcours from './Menuconcours'
-  import Sidebar from './Sidebar'
 
   export default {
     components: {
       Hello,
-      Menuconcours,
-      Sidebar
+      Menuconcours
     }
   }
 </script>

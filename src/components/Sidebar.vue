@@ -100,7 +100,7 @@
   }
 </script>
 
-<style>
+<style scoped>
   .side-menu {
     position: fixed;
     width: 300px;

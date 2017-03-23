@@ -1,8 +1,6 @@
 import consolante from '../../api/consolante'
 // import * as types from '../mutation-types'
 
-console.log(JSON.parse(window.localStorage.getItem('playtanque_teams') !== 'undefined' ? window.localStorage.getItem('playtanque_teams') : '[]'))
-
 // initial state
 // shape: [{ name, players }]
 const state = window.localStorage.getItem('playtanque_teams') !== 'undefined' ? JSON.parse(window.localStorage.getItem('playtanque_teams')) : {
