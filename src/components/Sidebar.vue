@@ -37,15 +37,15 @@
 
       <div class="side-menu-container">
         <ul class="nav navbar-nav players-list">
-          <li>
-            <form class="navbar-form" v-on:submit.prevent>
-              <div class="form-group">
-                <input class="form-control new-player" autofocus autocomplete="off" placeholder="(Nom player / équipe)" v-model="newPlayer">
-              </div>
-              <button class="btn btn-default" v-on:click="addPlayer"><span class="glyphicon glyphicon-plus"></span></button>
-            </form>
+          <li class="player" v-for="(player, index) in players" :class="{ completed: player.playing }">
+            <div class="view">
+              <input class="toggle"
+                type="checkbox"
+                :checked="player.playing"
+                @change="toggleFromConcours({ player: player, concours: concours })">
+              <label v-text="player.name"></label>
+            </div>
           </li>
-          <player v-for="(player, index) in players" :key="index" :player="player"></player>
         </ul>
       </div>
     </nav>
@@ -53,20 +53,20 @@
 </template>
 
 <script>
-  import { mapMutations, mapGetters } from 'vuex'
+  import { mapMutations, mapGetters, mapActions } from 'vuex'
   import Player from './Player.vue'
 
   const filters = {
-    all: players => players,
     active: players => players.filter(player => !player.done),
     completed: players => players.filter(player => player.done)
   }
 
   export default {
     components: { Player },
+    props: ['concours'],
     data () {
       return {
-        visibility: 'all',
+        visibility: 'active',
         filters: filters,
         newPlayer: ''
       }
@@ -86,6 +86,9 @@
         'toggleAll',
         'clearCompleted'
       ]),
+      ...mapActions([
+        'toggleFromConcours'
+      ]),
       saveJson () {
         console.log(JSON.parse(JSON.stringify(this.players)))
       }
@@ -95,7 +98,6 @@
       capitalize: s => s.charAt(0).toUpperCase() + s.slice(1)
     },
     created () {
-      this.$store.dispatch('getAllPlayers')
     }
   }
 </script>

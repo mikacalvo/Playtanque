@@ -3,7 +3,8 @@ import Router from 'vue-router'
 import Hello from '../components/Hello'
 import Players from '../components/Players'
 import Consolante from '../components/Consolante'
-import ConcoursParametrage from '../components/ConcoursParametrage'
+import ConsolanteParametrage from '../components/ConsolanteParametrage'
+import ConsolanteTeams from '../components/ConsolanteTeams'
 import NotFoundComponent from '../components/NotFoundComponent'
 
 Vue.use(Router)
@@ -27,8 +28,12 @@ export default new Router({
       component: Consolante
     },
     {
-      path: '/concours/parametrage',
-      component: ConcoursParametrage
+      path: '/consolante/parametrage',
+      component: ConsolanteParametrage
+    },
+    {
+      path: '/consolante/equipes',
+      component: ConsolanteTeams
     },
     {
       path: '*',

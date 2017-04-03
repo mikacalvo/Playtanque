@@ -43,21 +43,4 @@
     margin-right: 0;
     margin-left: 0;
   }
-  .side-body {
-    margin-left: 290px;
-  }
-  @media (max-width: 768px) {
-    /* Slide side body*/
-    .side-body {
-      margin-left: 5px;
-      margin-top: 70px;
-      position: relative;
-      -moz-animation: bodyslideout 300ms forwards;
-      -o-animation: bodyslideout 300ms forwards;
-      -webkit-animation: bodyslideout 300ms forwards;
-      animation: bodyslideout 300ms forwards;
-      -webkit-transform-style: preserve-3d;
-      transform-style: preserve-3d;
-    }
-  }
 </style>

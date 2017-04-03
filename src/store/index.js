@@ -3,7 +3,7 @@ import Vuex from 'vuex'
 import * as actions from './actions'
 import * as getters from './getters'
 import players from './modules/players'
-import teams from './modules/teams'
+import consolante from './modules/consolante'
 import plugins from './plugins'
 
 Vue.use(Vuex)
@@ -15,7 +15,7 @@ export default new Vuex.Store({
   getters,
   modules: {
     players,
-    teams
+    consolante
   },
   strict: debug,
   plugins

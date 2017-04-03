@@ -22,7 +22,7 @@
     <footer class="footer" v-show="players.length">
       <span class="player-count">
         <strong>{{ remaining }}</strong>
-        {{ remaining | pluralize('item') }} left
+        {{ remaining | pluralize('disponible') }}
       </span>
       <ul class="filters">
         <li v-for="(val, key) in filters">
@@ -63,7 +63,6 @@ export default {
       players: 'allPlayers'
     }),
     allChecked () {
-      console.log(this.players)
       return this.players.every(player => player.done)
     },
     filteredPlayers () {

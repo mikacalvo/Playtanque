@@ -1,43 +1,45 @@
 <template>
   <div class="row">
-    <sidebar></sidebar>
-    <div class="container-fluid">
-      <div class="side-body">
-        <div class="consolante" id="consolante">
-          <nav class="navbar navbar-default">
-            <div class="container">
-              <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                <ul class="nav navbar-nav">
-                  <li><a v-on:click="currentView = 'ConcoursParametrage'" href="#">Paramétrage</a></li>
-                  <li><a v-on:click="currentView = 'ConcoursPlay'" href="#">Concours</a></li>
-                </ul>
-              </div>
-            </div>
-          </nav>
-          <div>
-            <keep-alive>
-                <component v-bind:is="currentView" :type="'consolante'"></component>
-            </keep-alive>
+    <div class="container-fluid" id="consolante">
+      <nav class="navbar navbar-default">
+        <div class="container">
+          <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+              <li><a :class="{active: currentView == 'ConsolanteParametrage'}" v-on:click="currentView = 'ConsolanteParametrage'" href="#">Paramétrage</a></li>
+              <li><a :class="{active: currentView == 'ConsolanteTeams'}" v-on:click="currentView = 'ConsolanteTeams'" href="#">Équipes</a></li>
+              <li><a :class="{active: currentView == 'ConcoursPlay'}" v-on:click="currentView = 'ConcoursPlay'" href="#">Concours</a></li>
+            </ul>
           </div>
         </div>
+      </nav>
+      <div>
+        <keep-alive>
+            <component v-bind:is="currentView" :consolante="consolante"></component>
+        </keep-alive>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-  import ConcoursParametrage from './ConcoursParametrage'
+  import { mapGetters } from 'vuex'
+  import ConsolanteParametrage from './ConsolanteParametrage'
+  import ConsolanteTeams from './ConsolanteTeams'
   import Sidebar from './Sidebar'
 
   export default {
     name: 'consolante',
     data () {
       return {
-        currentView: 'ConcoursParametrage'
+        currentView: 'ConsolanteParametrage'
       }
     },
+    computed: mapGetters({
+      consolante: 'state'
+    }),
     components: {
-      ConcoursParametrage,
+      ConsolanteParametrage,
+      ConsolanteTeams,
       Sidebar
     }
   }
@@ -45,16 +47,20 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-  .consolante {
+  #consolante {
     padding: 10px
   }
 
-  .navbar{
+  .navbar {
     margin-bottom: 0px;
   }
   .navbar-nav>li>a {
     font-size: 15px;
     font-weight: 400;
+  }
+  .navbar-nav>li>a.active {
+    color: #f00;
+    box-shadow: 0px 20px 0px -18px #FF0000;
   }
   .navbar-default .navbar-nav>li>a:hover{
     color: #f00;
@@ -64,7 +70,7 @@
     padding:0px 15px;
     line-height: 3.428571;
   }
-  .add{
+  .add {
     color: #f00;
     box-shadow: 0px 20px 0px -18px #FF0000;
   }

@@ -7,12 +7,18 @@ if (navigator.userAgent.indexOf('PhantomJS') > -1) {
   window.localStorage.clear()
 }
 
+// initial state
+// shape: {
+//   'id': int,
+//   'name': string,
+//   'done': bool
+// }
 const state = {
-  players: JSON.parse(window.localStorage.getItem(STORAGE_KEY) || '[]')
+  all: JSON.parse(window.localStorage.getItem(STORAGE_KEY) || '[]')
 }
 
 const getters = {
-  allPlayers: state => state.players
+  allPlayers: state => state.all
 }
 
 const actions = {
@@ -25,22 +31,26 @@ const actions = {
 
 const mutations = {
   setPlayers (state, { players }) {
-    state.players = players
+    state.all = players
   },
 
   addPlayer (state, { text }) {
-    state.players.push({
+    state.all.push({
       text,
       done: false
     })
   },
 
   deletePlayer (state, { player }) {
-    state.players.splice(state.players.indexOf(player), 1)
+    state.all.splice(state.all.indexOf(player), 1)
   },
 
   togglePlayer (state, { player }) {
     player.done = !player.done
+  },
+
+  togglePlaying (state, player) {
+    player.playing = !player.playing
   },
 
   editPlayer (state, { player, value }) {
@@ -48,13 +58,13 @@ const mutations = {
   },
 
   toggleAll (state, { done }) {
-    state.players.forEach((player) => {
+    state.all.forEach((player) => {
       player.done = done
     })
   },
 
   clearCompleted (state) {
-    state.players = state.players.filter(player => !player.done)
+    state.all = state.players.filter(player => !player.done)
   }
 }
 

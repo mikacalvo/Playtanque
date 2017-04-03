@@ -1,12 +1,13 @@
-export const concoursTeams = state => {
-  return state.teams.all.map(({ teamName, players }) => {
-    return players.length > 0 ? players.map((teamPlayer) => {
-      const player = state.players.all.find(p => p.name === teamPlayer.name)
-      if (player) {
-        return {
-          name: player.name
-        }
-      }
-    }) : players
+export const consolanteTeams = state => {
+  return state.consolante.teams
+}
+
+export const teamPlayers = (state, getters) => (players) => {
+  return players.map((id) => {
+    return getters.getPlayerById(id)
   })
+}
+
+export const getPlayerById = (state, getters) => (id) => {
+  return getters.allPlayers.find(x => x.id === id)
 }

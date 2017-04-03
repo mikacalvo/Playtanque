@@ -1,8 +1,8 @@
 <template>
   <li style="border: solid 1px red; margin: 10px; display: inline-block;">
-    <h4>{{ team.name }}</h4>
+    <h4>Équipe {{ index + 1 }}</h4>
     <ul>
-      <li v-for="p in team.players">
+      <li v-for="p in teamPlayers">
         {{ p.name }}
       </li>
     </ul>
@@ -11,27 +11,11 @@
 
 <script>
 export default {
-  props: ['team'],
+  props: ['team', 'index'],
   computed: {
     teamPlayers () {
-      console.log('Team teamPlayers', this.team.players)
-    },
-    total () {
-      return this.players.reduce((total, p) => {
-        return total + p.price * p.quantity
-      }, 0)
+      return this.$store.getters.teamPlayers(this.team)
     }
-  },
-  methods: {
-    test () {
-      console.log('Team test', this.team)
-    },
-    checkout (players) {
-      this.$store.dispatch('checkout', players)
-    }
-  },
-  created () {
-    this.test()
   }
 }
 </script>

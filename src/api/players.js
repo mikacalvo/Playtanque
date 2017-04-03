@@ -2,20 +2,20 @@
  * Mocking client-server processing
  */
 const _players = [
-  {'name': 'Mika', 'done': false},
-  {'name': 'Jean-Paul', 'done': false},
-  {'name': 'Lola', 'done': false},
-  {'name': 'Sbicca', 'done': false},
-  {'name': 'Capoccetti', 'done': false},
-  {'name': 'Capelatti', 'done': false},
-  {'name': 'Christophe Michel', 'done': false},
-  {'name': 'Anthony', 'done': false},
-  {'name': 'Bruno', 'done': false},
-  {'name': 'Florent', 'done': false},
-  {'name': 'Jordan', 'done': false},
-  {'name': 'Paul', 'done': false},
-  {'name': 'Robert', 'done': false},
-  {'name': 'Rico', 'done': false}
+  {'id': 1, 'name': 'Jean-Paul', 'done': false},
+  {'id': 2, 'name': 'Lola', 'done': false},
+  {'id': 3, 'name': 'Sbicca', 'done': false},
+  {'id': 4, 'name': 'Capoccetti', 'done': false},
+  {'id': 5, 'name': 'Capelatti', 'done': false},
+  {'id': 6, 'name': 'Christophe Michel', 'done': false},
+  {'id': 7, 'name': 'Anthony', 'done': false},
+  {'id': 8, 'name': 'Bruno', 'done': false},
+  {'id': 9, 'name': 'Florent', 'done': false},
+  {'id': 10, 'name': 'Jordan', 'done': false},
+  {'id': 11, 'name': 'Paul', 'done': false},
+  {'id': 12, 'name': 'Robert', 'done': false},
+  {'id': 13, 'name': 'Rico', 'done': false},
+  {'id': 14, 'name': 'Mika', 'done': false}
 ]
 
 export default {
