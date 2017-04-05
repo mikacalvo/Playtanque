@@ -1,18 +1,16 @@
 <template>
-  <div class="row">
-    <div class="well well-sm">
+  <div class="concours-param">
+    <div class="side-menu sidebar">
       <form class="form-horizontal" action="">
         <fieldset>
-          <div class="form-group">
-            <label for="nbTeams" class="control-label col-md-3">
+          <div class="">
+            <label for="nbTeams" class="control-label">
               Nombre d'équipes
             </label>
-            <div class="col-md-2">
-              <input id="nbTeams" name="nbTeams" type="number" class="form-control" @change="doneEdit" :value="consolante.nbTeams" />
-            </div>
+            <input id="nbTeams" name="nbTeams" type="number" class="form-control" @change="doneEdit" :value="consolante.nbTeams" />
           </div>
-          <div class="form-group">
-            <label for="nbPlayers" class="control-label col-md-3">
+          <div class="">
+            <label for="nbPlayers" class="control-label">
               Nombre de joueurs par équipe
             </label>
             <div class="btn-group" data-toggle="buttons">
@@ -32,25 +30,79 @@
           </div>
         </fieldset>
       </form>
+
+      <div>
+        <div class="search-wrapper">
+          <input type="text" class="form-control" placeholder="Recherche" v-model="search" @keydown.esc="search=''">
+          <span class="glyphicon glyphicon-search" v-show="search === ''"></span>
+          <span class="glyphicon glyphicon-remove btn" v-show="search !== ''" @click="search = ''"></span>
+        </div>
+      </div>
+
+      <ul class="players-list">
+        <li class="player" v-for="(player, index) in filteredPlayers" :class="{ completed: player.playing }">
+          <div class="view">
+            <input class="toggle"
+              type="checkbox"
+              :checked="isPlaying(player)"
+              @change="toggleFromConcours(player)">
+            <label v-text="player.name"></label>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div class="side-body">
+      <ul class="row teams-list">
+        <consolante-team class="col-xs-3 col-lg-2" v-for="team, index in teams" :index="index" :key="index"></consolante-team>
+      </ul>
     </div>
   </div>
 </template>
 
 <script>
-  import { mapGetters } from 'vuex'
+  import { mapMutations, mapGetters } from 'vuex'
+  import Player from './Player.vue'
+  import ConsolanteTeam from './ConsolanteTeam.vue'
+  import Fuse from '../../node_modules/fuse.js/src/fuse.min.js'
 
   export default {
+    components: { Player, ConsolanteTeam },
     props: ['consolante'],
     data () {
       return {
-        visibility: 'all',
-        teamNumber: 3
+        search: '',
+        options: {
+          shouldSort: true,
+          threshold: 0.6,
+          location: 0,
+          distance: 30,
+          maxPatternLength: 32,
+          minMatchCharLength: 1,
+          keys: [
+            'name'
+          ]
+        },
+        fuse: null
       }
     },
-    computed: mapGetters({
-      teams: 'consolanteTeams'
-    }),
+    computed: {
+      ...mapGetters({
+        players: 'allPlayers',
+        teams: 'consolanteTeams'
+      }),
+      filteredPlayers () {
+        if (this.search !== '') {
+          return this.fuse.search(this.search)
+        } else {
+          return this.players
+        }
+      }
+    },
     methods: {
+      ...mapMutations([
+        'toggleAll',
+        'clearCompleted'
+      ]),
       doneEdit (e) {
         var input
         if (e.target.tagName === 'LABEL') {
@@ -64,12 +116,37 @@
           key: key,
           value: value
         })
+      },
+      isPlaying (player) {
+        for (var i = 0; i < this.teams.length; i++) {
+          if (this.teams[i].indexOf(player.id) !== -1) {
+            return true
+          }
+        }
+        return false
+      },
+      toggleFromConcours (player) {
+        if (this.isPlaying(player)) {
+          this.$store.dispatch('removeFromConcours', { player: player, concours: 'consolante' })
+        } else {
+          this.$store.dispatch('addToConcours', { player: player, concours: 'consolante' })
+        }
+      },
+      addPlayer (e) {
+        var name = this.newPlayer
+        if (name.trim()) {
+          this.$store.commit('addPlayer', { name })
+        }
+        this.newPlayer = ''
       }
+    },
+    created () {
+      this.fuse = new Fuse(this.players, this.options)
     }
   }
 </script>
 
-<style>
+<style scoped>
   div.row {
     padding-top: 20px;
   }
@@ -85,4 +162,237 @@
     opacity: 1;
   }
 
+  .concours-param {
+    margin-top: 10px;
+  }
+
+  .teams-list {
+    padding: 0;
+  }
+
+  .side-body {
+    margin-left: 240px;
+  }
+
+  .side-menu {
+    position: fixed;
+    padding: 0;
+    width: 230px;
+    height: 100%;
+    background-color: #f8f8f8;
+    border: 1px solid #e7e7e7;
+  }
+  .side-menu #nbTeams {
+    margin: 5px 0 0 30px;
+    width: 60px;
+  }
+  .side-menu .btn-group {
+    padding: 5px 0 10px 30px;
+  }
+  .side-menu label {
+    padding-left: 10px;
+  }
+  .side-menu .players-list {
+    padding: 0;
+    background-color: #f3f3f3;
+  }
+  .side-menu .players-list {
+    width: 100%;
+  }
+  .side-menu .players-list li {
+    padding-top: 5px;
+    padding-left: 15px;
+    border-bottom: 1px solid #e7e7e7;
+  }
+  .side-menu .players-list li:last-child {
+    border-bottom: none;
+  }
+  .side-menu .search-wrapper {
+    padding: 0;
+    padding-right: 50px;
+    width: 100%;
+    margin: 0;
+    position: relative;
+  }
+  .side-menu .search-wrapper.full {
+    padding-right: 0px;
+  }
+  .side-menu .search-wrapper .form-group {
+    width: 100%;
+    position: relative;
+  }
+  .side-menu .search-wrapper input {
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    width: 100%;
+    height: 50px;
+  }
+  .side-menu .search-wrapper span {
+    background-color: #f3f3f3;
+    border: 0;
+    border-radius: 0;
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 18px 18px;
+  }
+  .side-menu .search-wrapper .btn {
+    position: absolute;
+    right: 0;
+    top: 0;
+    border: 0;
+    border-radius: 0;
+    background-color: #f3f3f3;
+    padding: 15px 18px;
+  }
+  /*@media (max-width: 768px) {
+    .side-body {
+      margin-left: 5px;
+      margin-top: 70px;
+      position: relative;
+      -moz-animation: bodyslideout 300ms forwards;
+      -o-animation: bodyslideout 300ms forwards;
+      -webkit-animation: bodyslideout 300ms forwards;
+      animation: bodyslideout 300ms forwards;
+      -webkit-transform-style: preserve-3d;
+      transform-style: preserve-3d;
+    }
+    .side-menu {
+      position: relative;
+      width: 100%;
+      height: 0;
+      border-right: 0;
+      border-bottom: 1px solid #e7e7e7;
+    }
+    .side-menu .brand-name-wrapper .navbar-brand {
+      display: inline-block;
+    }
+    @-moz-keyframes slidein {
+      0% {
+        left: -300px;
+      }
+      100% {
+        left: 10px;
+      }
+    }
+    @-webkit-keyframes slidein {
+      0% {
+        left: -300px;
+      }
+      100% {
+        left: 10px;
+      }
+    }
+    @keyframes slidein {
+      0% {
+        left: -300px;
+      }
+      100% {
+        left: 10px;
+      }
+    }
+    @-moz-keyframes slideout {
+      0% {
+        left: 0;
+      }
+      100% {
+        left: -300px;
+      }
+    }
+    @-webkit-keyframes slideout {
+      0% {
+        left: 0;
+      }
+      100% {
+        left: -300px;
+      }
+    }
+    @keyframes slideout {
+      0% {
+        left: 0;
+      }
+      100% {
+        left: -300px;
+      }
+    }
+    @-moz-keyframes bodyslidein {
+      0% {
+        left: 0;
+      }
+      100% {
+        left: 300px;
+      }
+    }
+    @-webkit-keyframes bodyslidein {
+      0% {
+        left: 0;
+      }
+      100% {
+        left: 300px;
+      }
+    }
+    @keyframes bodyslidein {
+      0% {
+        left: 0;
+      }
+      100% {
+        left: 300px;
+      }
+    }
+    @-moz-keyframes bodyslideout {
+      0% {
+        left: 300px;
+      }
+      100% {
+        left: 0;
+      }
+    }
+    @-webkit-keyframes bodyslideout {
+      0% {
+        left: 300px;
+      }
+      100% {
+        left: 0;
+      }
+    }
+    @keyframes bodyslideout {
+      0% {
+        left: 300px;
+      }
+      100% {
+        left: 0;
+      }
+    }
+    .body-slide-in {
+      -moz-animation: bodyslidein 300ms forwards;
+      -o-animation: bodyslidein 300ms forwards;
+      -webkit-animation: bodyslidein 300ms forwards;
+      animation: bodyslidein 300ms forwards;
+      -webkit-transform-style: preserve-3d;
+      transform-style: preserve-3d;
+    }
+    .navbar-toggle {
+      border: 0;
+      float: left;
+      padding: 18px;
+      margin: 0;
+      border-radius: 0;
+      background-color: #f3f3f3;
+    }
+    .search-wrapper {
+      border-bottom: 0;
+    }
+    .search-wrapper .form-group {
+      margin: 0;
+    }
+    .navbar-header {
+      position: fixed;
+      z-index: 3;
+      background-color: #f8f8f8;
+    }
+    .panel-body .navbar-nav {
+      margin: 0;
+    }
+  }*/
 </style>

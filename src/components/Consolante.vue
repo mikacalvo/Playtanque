@@ -6,17 +6,14 @@
           <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
               <li><a :class="{active: currentView == 'ConsolanteParametrage'}" v-on:click="currentView = 'ConsolanteParametrage'" href="#">Paramétrage</a></li>
-              <li><a :class="{active: currentView == 'ConsolanteTeams'}" v-on:click="currentView = 'ConsolanteTeams'" href="#">Équipes</a></li>
               <li><a :class="{active: currentView == 'ConcoursPlay'}" v-on:click="currentView = 'ConcoursPlay'" href="#">Concours</a></li>
             </ul>
           </div>
         </div>
       </nav>
-      <div>
-        <keep-alive>
-            <component v-bind:is="currentView" :consolante="consolante"></component>
-        </keep-alive>
-      </div>
+      <keep-alive>
+          <component v-bind:is="currentView" :consolante="consolante"></component>
+      </keep-alive>
     </div>
   </div>
 </template>
@@ -24,7 +21,6 @@
 <script>
   import { mapGetters } from 'vuex'
   import ConsolanteParametrage from './ConsolanteParametrage'
-  import ConsolanteTeams from './ConsolanteTeams'
   import Sidebar from './Sidebar'
 
   export default {
@@ -39,7 +35,6 @@
     }),
     components: {
       ConsolanteParametrage,
-      ConsolanteTeams,
       Sidebar
     }
   }
@@ -73,5 +68,21 @@
   .add {
     color: #f00;
     box-shadow: 0px 20px 0px -18px #FF0000;
+  }
+
+  .navbar-collapse.collapse {
+    display: block!important;
+  }
+
+  .navbar-nav>li, .navbar-nav {
+    float: left !important;
+  }
+
+  .navbar-nav.navbar-right:last-child {
+    margin-right: -15px !important;
+  }
+
+  .navbar-right {
+    float: right!important;
   }
 </style>
