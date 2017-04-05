@@ -49,10 +49,6 @@ const mutations = {
     player.done = !player.done
   },
 
-  togglePlaying (state, player) {
-    player.playing = !player.playing
-  },
-
   editPlayer (state, { player, value }) {
     player.text = value
   },

@@ -8,6 +8,6 @@ export const teamPlayers = (state, getters) => (players) => {
   })
 }
 
-export const getPlayerById = (state, getters) => (id) => {
-  return getters.allPlayers.find(x => x.id === id)
+export const getPlayerById = (state) => (id) => {
+  return state.players.all.find(x => x.id === id)
 }

@@ -40,8 +40,12 @@ const mutations = {
     state.teams.splice(index, 1)
   },
 
-  editTeam (state, { team, value }) {
-    team.name = value
+  removeFromTeam (state, { team, begin, end }) {
+    if (typeof end !== 'undefined') {
+      team.splice(begin, end)
+    } else {
+      team.splice(begin)
+    }
   },
 
   addPlayerToTeam (state, { team, player }) {
