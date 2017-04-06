@@ -1,5 +1,9 @@
 export const consolanteTeams = state => {
-  return state.consolante.teams
+  return state.consolante.teams.map((team) => {
+    return team.map((player) => {
+      return state.players.all.find(x => x.id === player)
+    })
+  })
 }
 
 export const teamPlayers = (state, getters) => (players) => {

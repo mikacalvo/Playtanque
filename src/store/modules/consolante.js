@@ -58,6 +58,11 @@ const mutations = {
       tmp[i] = state.teams[i].filter(p => p !== player.id)
     }
     state.teams = tmp
+  },
+
+  movePlayer (state, { team, oldIndex, newIndex }) {
+    const movedItem = team.splice(oldIndex, 1)[0]
+    team.splice(newIndex, 0, movedItem)
   }
 }
 

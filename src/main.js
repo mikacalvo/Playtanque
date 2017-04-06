@@ -12,6 +12,13 @@ import App from './components/App'
 require('bootstrap-sass')
 Vue.config.productionTip = false
 
+import Sortable from 'sortablejs'
+Vue.directive('sortable', {
+  inserted: function (el, binding) {
+    return new Sortable(el, binding.value || {})
+  }
+})
+
 /* eslint-disable no-new */
 new Vue({
   store,

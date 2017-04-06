@@ -53,97 +53,97 @@
     </div>
     <div class="side-body">
       <ul class="row teams-list">
-        <consolante-team class="col-xs-3 col-lg-2" v-for="team, index in teams" :index="index" :key="index"></consolante-team>
+        <consolante-team class="col-xs-3 col-lg-2" v-for="team, index in teams" :team="team" :index="index" :key="index"></consolante-team>
       </ul>
     </div>
   </div>
 </template>
 
 <script>
-  import { mapMutations, mapGetters } from 'vuex'
-  import Player from './Player.vue'
-  import ConsolanteTeam from './ConsolanteTeam.vue'
-  import Fuse from '../../node_modules/fuse.js/src/fuse.min.js'
+import { mapMutations, mapGetters } from 'vuex'
+import Player from './Player.vue'
+import ConsolanteTeam from './ConsolanteTeam.vue'
+import Fuse from 'fuse.js'
 
-  export default {
-    components: { Player, ConsolanteTeam },
-    props: ['consolante'],
-    data () {
-      return {
-        search: '',
-        options: {
-          shouldSort: true,
-          threshold: 0.6,
-          location: 0,
-          distance: 30,
-          maxPatternLength: 32,
-          minMatchCharLength: 1,
-          keys: [
-            'name'
-          ]
-        },
-        fuse: null
-      }
-    },
-    computed: {
-      ...mapGetters({
-        players: 'allPlayers',
-        teams: 'consolanteTeams'
-      }),
-      filteredPlayers () {
-        if (this.search !== '') {
-          return this.fuse.search(this.search)
-        } else {
-          return this.players
-        }
-      }
-    },
-    methods: {
-      ...mapMutations([
-        'toggleAll',
-        'clearCompleted'
-      ]),
-      doneEdit (e) {
-        var input
-        if (e.target.tagName === 'LABEL') {
-          input = e.target.children[0]
-        } else {
-          input = e.target
-        }
-        const key = input.name
-        const value = parseInt(input.value.trim())
-        this.$store.dispatch('editConsolante', {
-          key: key,
-          value: value
-        })
+export default {
+  components: { Player, ConsolanteTeam },
+  props: ['consolante'],
+  data () {
+    return {
+      search: '',
+      options: {
+        shouldSort: true,
+        threshold: 0.6,
+        location: 0,
+        distance: 30,
+        maxPatternLength: 32,
+        minMatchCharLength: 1,
+        keys: [
+          'name'
+        ]
       },
-      isPlaying (player) {
-        for (var i = 0; i < this.teams.length; i++) {
-          if (this.teams[i].indexOf(player.id) !== -1) {
-            return true
-          }
-        }
-        return false
-      },
-      toggleFromConcours (player) {
-        if (this.isPlaying(player)) {
-          this.$store.dispatch('removeFromConcours', { player: player, concours: 'consolante' })
-        } else {
-          this.$store.dispatch('addToConcours', { player: player, concours: 'consolante' })
-        }
-      },
-      addPlayer (e) {
-        var name = this.newPlayer
-        if (name.trim()) {
-          this.$store.commit('addPlayer', { name })
-        }
-        this.newPlayer = ''
-      }
-    },
-    created () {
-      this.fuse = new Fuse(this.players, this.options)
+      fuse: null
     }
+  },
+  computed: {
+    ...mapGetters({
+      players: 'allPlayers',
+      teams: 'consolanteTeams'
+    }),
+    filteredPlayers () {
+      if (this.search !== '') {
+        return this.fuse.search(this.search)
+      } else {
+        return this.players
+      }
+    }
+  },
+  methods: {
+    ...mapMutations([
+      'toggleAll',
+      'clearCompleted'
+    ]),
+    doneEdit (e) {
+      var input
+      if (e.target.tagName === 'LABEL') {
+        input = e.target.children[0]
+      } else {
+        input = e.target
+      }
+      const key = input.name
+      const value = parseInt(input.value.trim())
+      this.$store.dispatch('editConsolante', {
+        key: key,
+        value: value
+      })
+    },
+    isPlaying (player) {
+      for (var i = 0; i < this.teams.length; i++) {
+        if (this.teams[i].indexOf(player.id) !== -1) {
+          return true
+        }
+      }
+      return false
+    },
+    toggleFromConcours (player) {
+      if (this.isPlaying(player)) {
+        this.$store.dispatch('removeFromConcours', { player: player, concours: 'consolante' })
+      } else {
+        this.$store.dispatch('addToConcours', { player: player, concours: 'consolante' })
+      }
+    },
+    addPlayer (e) {
+      var name = this.newPlayer
+      if (name.trim()) {
+        this.$store.commit('addPlayer', { name })
+      }
+      this.newPlayer = ''
+    }
+  },
+  created () {
+    this.fuse = new Fuse(this.players, this.options)
   }
+}
 </script>
 
 <style scoped>
