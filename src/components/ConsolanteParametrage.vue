@@ -53,7 +53,7 @@
     </div>
     <div class="side-body">
       <ul class="row teams-list">
-        <consolante-team class="col-xs-3 col-lg-2" v-for="team, index in teams" :team="team" :index="index" :key="index"></consolante-team>
+        <consolante-team class="col-xs-3 col-lg-2" v-for="(team, index) in teams" :team="team" :index="index" :key="index"></consolante-team>
       </ul>
     </div>
   </div>
@@ -118,12 +118,7 @@ export default {
       })
     },
     isPlaying (player) {
-      for (var i = 0; i < this.teams.length; i++) {
-        if (this.teams[i].indexOf(player.id) !== -1) {
-          return true
-        }
-      }
-      return false
+      return !this.teams.every(team => team.every(teamPlayer => teamPlayer.id !== player.id))
     },
     toggleFromConcours (player) {
       if (this.isPlaying(player)) {

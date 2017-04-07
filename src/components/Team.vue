@@ -2,7 +2,7 @@
   <li style="border: solid 1px red; margin: 10px; display: inline-block;">
     <h4>Équipe {{ index + 1 }}</h4>
     <ul v-sortable="sortableOptions" :data-index="index">
-      <li class="player" v-for="p in team">
+      <li class="player" v-for="p in team" :key="p.id">
         {{ p.name }}
       </li>
     </ul>
@@ -17,23 +17,39 @@ export default {
       sortableOptions: {
         group: 'player',
         draggable: '.player',
-        onAdd: function (evt) { // Element is dropped into the list from another list
-          console.log(evt)
-          // var itemEl = evt.item;  // dragged HTMLElement
-          // evt.from;  // previous list
-        },
+        onMove: this.move,
+        onAdd: this.transfer,
         onUpdate: this.reorder
       }
     }
   },
   methods: {
+    move (evt) {
+      if (evt.to !== evt.from && evt.to.children.length >= this.$store.state.consolante.nbPlayers) {
+        return false
+      }
+    },
     reorder ({oldIndex, newIndex}) {
       this.$store.commit('movePlayer', {
-        team: this.team,
+        team: this.index,
         oldIndex: oldIndex,
         newIndex: newIndex
+      })
+    },
+    transfer (evt) {
+      this.$store.dispatch('changePlayerTeam', {
+        oldTeamIndex: parseInt(evt.from.dataset.index),
+        oldPlayerIndex: evt.oldIndex,
+        newTeamIndex: parseInt(evt.to.dataset.index),
+        newPlayerIndex: evt.newIndex
       })
     }
   }
 }
 </script>
+
+<style scoped>
+  ul {
+    height: 70px;
+  }
+</style>

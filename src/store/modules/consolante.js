@@ -4,7 +4,7 @@
 // initial state
 const state = JSON.parse(window.localStorage.getItem('playtanque_consolante')) ||
   {
-    'nbTeams': 24,
+    'nbTeams': 4,
     'nbPlayers': 3,
     'teams': []
   }
@@ -17,6 +17,18 @@ const getters = {
 
 // actions
 const actions = {
+  changePlayerTeam ({ state, commit }, { oldTeamIndex, oldPlayerIndex, newTeamIndex, newPlayerIndex }) {
+    commit('addPlayerToTeam', {
+      team: newTeamIndex,
+      player: state.teams[oldTeamIndex][oldPlayerIndex],
+      index: newPlayerIndex
+    })
+    commit('removeFromTeam', {
+      team: oldTeamIndex,
+      begin: oldPlayerIndex,
+      end: 1
+    })
+  }
 }
 
 const mutations = {
@@ -28,12 +40,8 @@ const mutations = {
     state.teams = teams
   },
 
-  addTeam (state, index) {
-    if (index >= 0) {
-      state.teams[index] = []
-    } else {
-      state.teams.push([])
-    }
+  addTeam (state) {
+    state.teams.push([])
   },
 
   deleteTeam (state, index) {
@@ -42,27 +50,31 @@ const mutations = {
 
   removeFromTeam (state, { team, begin, end }) {
     if (typeof end !== 'undefined') {
-      team.splice(begin, end)
+      state.teams[team].splice(begin, end)
     } else {
-      team.splice(begin)
+      state.teams[team].splice(begin)
     }
   },
 
-  addPlayerToTeam (state, { team, player }) {
-    team.push(player.id)
+  addPlayerToTeam (state, { team, player, index }) {
+    if (index >= 0) {
+      state.teams[team].splice(index, 0, player)
+    } else {
+      state.teams[team].push(player)
+    }
   },
 
   removePlayer (state, player) {
     var tmp = []
     for (var i = 0; i < state.teams.length; i++) {
-      tmp[i] = state.teams[i].filter(p => p !== player.id)
+      tmp[i] = state.teams[i].filter(p => p !== player)
     }
     state.teams = tmp
   },
 
   movePlayer (state, { team, oldIndex, newIndex }) {
-    const movedItem = team.splice(oldIndex, 1)[0]
-    team.splice(newIndex, 0, movedItem)
+    const movedItem = state.teams[team].splice(oldIndex, 1)[0]
+    state.teams[team].splice(newIndex, 0, movedItem)
   }
 }
 

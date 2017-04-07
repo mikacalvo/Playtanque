@@ -5,11 +5,11 @@ export const editConsolante = ({ state, commit }, {key, value}) => {
   if (key === 'nbTeams') {
     var len = state['consolante'].teams.length
     var max = value > len ? value : len
-    for (i = max; i >= 0; i--) {
+    for (i = 0; i < max; i++) {
       if (i >= value) {
         commit('deleteTeam', i)
       } else if (typeof state['consolante'].teams[i] === 'undefined') {
-        commit('addTeam', i)
+        commit('addTeam')
       }
     }
   } else if (key === 'nbPlayers' && value < state['consolante'].nbPlayers) { // Remove extra players
@@ -31,7 +31,7 @@ export const editConsolante = ({ state, commit }, {key, value}) => {
 export const addToConcours = ({ state, commit }, {player, concours}) => {
   var lastIndex = state[concours].teams.length - 1
   if (lastIndex === -1) {
-    commit('addTeam', '')
+    commit('addTeam')
     lastIndex++
   } else {
     for (var i = 0; i < state[concours].teams.length; i++) {
@@ -46,20 +46,20 @@ export const addToConcours = ({ state, commit }, {player, concours}) => {
     alert('Concours plein')
   } else {
     commit('addPlayerToTeam', {
-      team: state[concours].teams[lastIndex],
-      player: player
+      team: lastIndex,
+      player: player.id
     })
   }
 }
 
 export const removeFromConcours = ({ state, commit }, {player, concours}) => {
-  commit('removePlayer', player)
+  commit('removePlayer', player.id)
 }
 
 export const movePlayer = ({ state, commit }, {player, index, concours}) => {
-  commit('removePlayer', player)
+  commit('removePlayer', player.id)
   commit('addPlayerToTeam', {
-    team: state[concours].teams[index],
-    player: player
+    team: index,
+    player: player.id
   })
 }
