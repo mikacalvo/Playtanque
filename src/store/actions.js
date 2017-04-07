@@ -7,7 +7,7 @@ export const editConsolante = ({ state, commit }, {key, value}) => {
     var max = value > len ? value : len
     for (i = 0; i < max; i++) {
       if (i >= value) {
-        commit('deleteTeam', i)
+        commit('deleteTeam')
       } else if (typeof state['consolante'].teams[i] === 'undefined') {
         commit('addTeam')
       }

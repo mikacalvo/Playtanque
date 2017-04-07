@@ -45,7 +45,11 @@ const mutations = {
   },
 
   deleteTeam (state, index) {
-    state.teams.splice(index, 1)
+    if (index >= 0) {
+      state.teams.splice(index, 1)
+    } else {
+      state.teams.splice(-1, 1)
+    }
   },
 
   removeFromTeam (state, { team, begin, end }) {
