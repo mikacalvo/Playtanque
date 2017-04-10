@@ -2,7 +2,7 @@ import createLogger from '../plugins/logger'
 
 const localStoragePlugin = store => {
   store.subscribe((mutation, { players }) => {
-    window.localStorage.setItem('playtanque_players', JSON.stringify(players.all))
+    window.localStorage.setItem('playtanque_players', JSON.stringify(players))
   })
 
   store.subscribe((mutation, { teams }) => {

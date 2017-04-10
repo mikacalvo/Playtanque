@@ -51,9 +51,16 @@
         </li>
       </ul>
     </div>
+
     <div class="side-body">
+      <p>
+        <small>Rappel : pour éviter un concours avec des tirages blancs, le nombre d'équipes doit être un multiple de 8 : 16, 32, 64, 128.</small>
+      </p>
+      <p v-show="consolante.ready">
+        <strong style="color:red;">Concours complet : </strong> Avant de le commencer, faites un tirage aléatoire en cliquant sur le bouton <button @click="shuffle"><span class="glyphicon glyphicon-random"></span></button>
+      </p>
       <ul class="row teams-list">
-        <consolante-team class="col-xs-3 col-lg-2" v-for="(team, index) in teams" :team="team" :index="index" :key="index"></consolante-team>
+        <consolante-team class="col-xs-6 col-lg-2" v-for="(team, index) in teams" :team="team" :index="index" :key="index"></consolante-team>
       </ul>
     </div>
   </div>
@@ -98,6 +105,27 @@ export default {
       }
     }
   },
+  watch: {
+    // whenever question changes, this function will run
+    teams: function () {
+      var ready = true
+      for (var i = 0; i < this.teams.length; i++) {
+        if (this.teams[i].length !== this.consolante.nbPlayers) {
+          ready = false
+          break
+        }
+      }
+      if (this.consolante.ready !== ready) {
+        this.$store.commit('setConsolante', {
+          key: 'ready',
+          value: ready
+        })
+      }
+      if (ready) {
+        this.$store.commit('initMatchs')
+      }
+    }
+  },
   methods: {
     ...mapMutations([
       'toggleAll',
@@ -133,6 +161,14 @@ export default {
         this.$store.commit('addPlayer', { name })
       }
       this.newPlayer = ''
+    },
+    shuffle () {
+      var a = this.teams
+      for (let i = a.length; i; i--) {
+        let j = Math.floor(Math.random() * i);
+        [a[i - 1], a[j]] = [a[j], a[i - 1]]
+      }
+      this.$store.commit('setTeams', a)
     }
   },
   created () {
@@ -163,6 +199,7 @@ export default {
 
   .teams-list {
     padding: 0;
+    list-style-type: none;
   }
 
   .side-body {
@@ -170,10 +207,9 @@ export default {
   }
 
   .side-menu {
-    position: fixed;
+    float: left;
     padding: 0;
     width: 230px;
-    height: 100%;
     background-color: #f8f8f8;
     border: 1px solid #e7e7e7;
   }
@@ -193,6 +229,7 @@ export default {
   }
   .side-menu .players-list {
     width: 100%;
+    list-style-type: none;
   }
   .side-menu .players-list li {
     padding-top: 5px;

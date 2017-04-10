@@ -1,5 +1,5 @@
 <template>
-  <li style="border: solid 1px red; margin: 10px; display: inline-block;">
+  <li style="border: solid 1px red;">
     <h4>Équipe {{ index + 1 }}</h4>
     <ul v-sortable="sortableOptions" :data-index="index">
       <li class="player" v-for="p in team" :key="p.id">
@@ -50,6 +50,6 @@ export default {
 
 <style scoped>
   ul {
-    height: 70px;
+    min-height: 70px;
   }
 </style>

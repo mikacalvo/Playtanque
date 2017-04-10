@@ -4,13 +4,16 @@
 // initial state
 const state = JSON.parse(window.localStorage.getItem('playtanque_consolante')) ||
   {
+    'ready': false,
     'nbTeams': 4,
     'nbPlayers': 3,
-    'teams': []
+    'teams': [],
+    'matchs': []
   }
 
 // getters
 const getters = {
+  ready: state => state.ready,
   state: state => state,
   allTeams: state => state.teams
 }
@@ -37,7 +40,30 @@ const mutations = {
   },
 
   setTeams (state, teams) {
-    state.teams = teams
+    state.teams = teams.map((team) => {
+      return team.map((player) => {
+        return player.id
+      })
+    })
+  },
+
+  initMatchs (state) {
+    let concoursA = [{
+      teams: [],
+      scores: []
+    }]
+    for (let i = 0; i < state.teams.length; i++) {
+      let j = parseInt(i / 2)
+      if (typeof concoursA[j] === 'undefined') {
+        concoursA[j] = {
+          teams: [],
+          scores: []
+        }
+      }
+      concoursA[j].teams.push(i)
+      concoursA[j].scores.push(0)
+    }
+    state.matchs = [concoursA, []]
   },
 
   addTeam (state) {

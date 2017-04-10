@@ -90,7 +90,6 @@ export default {
     capitalize: s => s.charAt(0).toUpperCase() + s.slice(1)
   },
   created () {
-    this.$store.dispatch('getAllPlayers')
   }
 }
 </script>

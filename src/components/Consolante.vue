@@ -6,7 +6,7 @@
           <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
               <li><a :class="{active: currentView == 'ConsolanteParametrage'}" v-on:click="currentView = 'ConsolanteParametrage'" href="#">Paramétrage</a></li>
-              <li><a :class="{active: currentView == 'ConcoursPlay'}" v-on:click="currentView = 'ConcoursPlay'" href="#">Concours</a></li>
+              <li><a :class="{disabled: !ready, active: currentView == 'ConcoursPlay'}" v-on:click="currentView = ready ? 'ConcoursPlay' : currentView" href="#">Concours</a></li>
             </ul>
           </div>
         </div>
@@ -19,25 +19,26 @@
 </template>
 
 <script>
-  import { mapGetters } from 'vuex'
-  import ConsolanteParametrage from './ConsolanteParametrage'
-  import Sidebar from './Sidebar'
+import { mapGetters } from 'vuex'
+import ConsolanteParametrage from './ConsolanteParametrage'
+import Sidebar from './Sidebar'
 
-  export default {
-    name: 'consolante',
-    data () {
-      return {
-        currentView: 'ConsolanteParametrage'
-      }
-    },
-    computed: mapGetters({
-      consolante: 'state'
-    }),
-    components: {
-      ConsolanteParametrage,
-      Sidebar
+export default {
+  name: 'consolante',
+  data () {
+    return {
+      currentView: 'ConsolanteParametrage'
     }
+  },
+  computed: mapGetters({
+    consolante: 'state',
+    ready: 'ready'
+  }),
+  components: {
+    ConsolanteParametrage,
+    Sidebar
   }
+}
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
@@ -56,6 +57,10 @@
   .navbar-nav>li>a.active {
     color: #f00;
     box-shadow: 0px 20px 0px -18px #FF0000;
+  }
+  .navbar-nav>li>a.disabled, .navbar-default .navbar-nav>li>a.disabled:hover, .navbar-default .navbar-nav>li>a.disabled:focus {
+    color: #ccc;
+    box-shadow: none;
   }
   .navbar-default .navbar-nav>li>a:hover{
     color: #f00;
