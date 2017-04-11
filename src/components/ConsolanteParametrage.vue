@@ -68,12 +68,11 @@
 
 <script>
 import { mapMutations, mapGetters } from 'vuex'
-import Player from './Player.vue'
 import ConsolanteTeam from './ConsolanteTeam.vue'
 import Fuse from 'fuse.js'
 
 export default {
-  components: { Player, ConsolanteTeam },
+  components: { ConsolanteTeam },
   props: ['consolante'],
   data () {
     return {
@@ -106,7 +105,6 @@ export default {
     }
   },
   watch: {
-    // whenever question changes, this function will run
     teams: function () {
       var ready = true
       for (var i = 0; i < this.teams.length; i++) {
@@ -122,7 +120,7 @@ export default {
         })
       }
       if (ready) {
-        this.$store.commit('initMatchs')
+        this.$store.dispatch('initMatchs')
       }
     }
   },

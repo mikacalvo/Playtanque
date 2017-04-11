@@ -6,13 +6,14 @@
           <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
               <li><a :class="{active: currentView == 'ConsolanteParametrage'}" v-on:click="currentView = 'ConsolanteParametrage'" href="#">Paramétrage</a></li>
-              <li><a :class="{disabled: !ready, active: currentView == 'ConcoursPlay'}" v-on:click="currentView = ready ? 'ConcoursPlay' : currentView" href="#">Concours</a></li>
+              <li><a :class="{disabled: !ready, active: currentView == 'ConsolantePlay' && concours == 0}" v-on:click="go(0)" href="#">Concours A</a></li>
+              <li><a :class="{disabled: !ready, active: currentView == 'ConsolantePlay' && concours == 1}" v-on:click="go(1)" href="#">Concours B</a></li>
             </ul>
           </div>
         </div>
       </nav>
       <keep-alive>
-          <component v-bind:is="currentView" :consolante="consolante"></component>
+          <component v-bind:is="currentView" :consolante="consolante" :concours="concours"></component>
       </keep-alive>
     </div>
   </div>
@@ -21,13 +22,15 @@
 <script>
 import { mapGetters } from 'vuex'
 import ConsolanteParametrage from './ConsolanteParametrage'
+import ConsolantePlay from './ConsolantePlay'
 import Sidebar from './Sidebar'
 
 export default {
   name: 'consolante',
   data () {
     return {
-      currentView: 'ConsolanteParametrage'
+      currentView: 'ConsolanteParametrage',
+      concours: 0
     }
   },
   computed: mapGetters({
@@ -36,7 +39,14 @@ export default {
   }),
   components: {
     ConsolanteParametrage,
+    ConsolantePlay,
     Sidebar
+  },
+  methods: {
+    go: function (index) {
+      this.concours = index
+      this.currentView = this.ready ? 'ConsolantePlay' : this.currentView
+    }
   }
 }
 </script>

@@ -15,7 +15,8 @@ const state = JSON.parse(window.localStorage.getItem('playtanque_consolante')) |
 const getters = {
   ready: state => state.ready,
   state: state => state,
-  allTeams: state => state.teams
+  allTeams: state => state.teams,
+  matchs: state => state.matchs
 }
 
 // actions
@@ -31,6 +32,31 @@ const actions = {
       begin: oldPlayerIndex,
       end: 1
     })
+  },
+
+  initMatchs ({ state, commit }) {
+    // tour 1
+    let concoursA = [[{
+      teams: [],
+      scores: []
+    }]]
+    for (let i = 0; i < state.teams.length; i++) {
+      let j = parseInt(i / 2)
+      if (typeof concoursA[0][j] === 'undefined') {
+        concoursA[0][j] = {
+          teams: [],
+          scores: []
+        }
+      }
+      concoursA[0][j].teams.push(i)
+      concoursA[0][j].scores.push(0)
+    }
+    // tours suivants
+    let nb = parseInt(state.nbTeams / 2)
+    for (var i = 1; i < nb; i++) {
+      concoursA[i] = []
+    }
+    commit('setMatchs', [concoursA, []])
   }
 }
 
@@ -47,23 +73,8 @@ const mutations = {
     })
   },
 
-  initMatchs (state) {
-    let concoursA = [{
-      teams: [],
-      scores: []
-    }]
-    for (let i = 0; i < state.teams.length; i++) {
-      let j = parseInt(i / 2)
-      if (typeof concoursA[j] === 'undefined') {
-        concoursA[j] = {
-          teams: [],
-          scores: []
-        }
-      }
-      concoursA[j].teams.push(i)
-      concoursA[j].scores.push(0)
-    }
-    state.matchs = [concoursA, []]
+  setMatchs (state, matchs) {
+    state.matchs = matchs
   },
 
   addTeam (state) {

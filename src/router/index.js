@@ -4,6 +4,7 @@ import Hello from '../components/Hello'
 import Players from '../components/Players'
 import Consolante from '../components/Consolante'
 import ConsolanteParametrage from '../components/ConsolanteParametrage'
+import ConsolantePlay from '../components/ConsolantePlay'
 import NotFoundComponent from '../components/NotFoundComponent'
 
 Vue.use(Router)
@@ -29,6 +30,10 @@ export default new Router({
     {
       path: '/consolante/parametrage',
       component: ConsolanteParametrage
+    },
+    {
+      path: '/consolante/play',
+      component: ConsolantePlay
     },
     {
       path: '*',
