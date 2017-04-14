@@ -1,6 +1,5 @@
 // import consolante from '../../api/consolante'
 // import * as types from '../mutation-types'
-import Vue from 'vue'
 
 // initial state
 const state = JSON.parse(window.localStorage.getItem('playtanque_consolante')) ||
@@ -193,7 +192,7 @@ const mutations = {
       let obj = {}
       obj[team] = 0
       clone[tournament][round + 1][parseInt(game / 2)] = Object.assign({}, clone[tournament][round + 1][parseInt(game / 2)], obj)
-      Vue.set(state, 'tournaments', state.tournaments)
+      state.tournaments = Object.assign({}, clone)
     }
   },
 
