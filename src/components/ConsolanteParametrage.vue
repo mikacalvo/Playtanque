@@ -1,5 +1,5 @@
 <template>
-  <div class="concours-param">
+  <div class="tournament-param">
     <div class="side-menu sidebar">
       <form class="form-horizontal" action="">
         <fieldset>
@@ -45,7 +45,7 @@
             <input class="toggle"
               type="checkbox"
               :checked="isPlaying(player)"
-              @change="toggleFromConcours(player)">
+              @change="toggleFromTournament(player)">
             <label v-text="player.name"></label>
           </div>
         </li>
@@ -57,7 +57,7 @@
         <small>Rappel : pour éviter un concours avec des tirages blancs, le nombre d'équipes doit être un multiple de 8 : 16, 32, 64, 128.</small>
       </p>
       <p v-show="consolante.ready">
-        <strong style="color:red;">Concours complet : </strong> Avant de le commencer, faites un tirage aléatoire en cliquant sur le bouton <button @click="shuffle"><span class="glyphicon glyphicon-random"></span></button>
+        <strong style="color:red;">Tournament complet : </strong> Avant de le commencer, faites un tirage aléatoire en cliquant sur le bouton <button @click="shuffle"><span class="glyphicon glyphicon-random"></span></button>
       </p>
       <ul class="row teams-list">
         <consolante-team class="col-xs-6 col-lg-2" v-for="(team, index) in teams" :team="team" :index="index" :key="index"></consolante-team>
@@ -73,7 +73,6 @@ import Fuse from 'fuse.js'
 
 export default {
   components: { ConsolanteTeam },
-  props: ['consolante'],
   data () {
     return {
       search: '',
@@ -93,6 +92,7 @@ export default {
   },
   computed: {
     ...mapGetters({
+      consolante: 'consolante',
       players: 'allPlayers',
       teams: 'consolanteTeams'
     }),
@@ -120,7 +120,7 @@ export default {
         })
       }
       if (ready) {
-        this.$store.dispatch('initMatchs')
+        this.$store.dispatch('initTournament')
       }
     }
   },
@@ -146,11 +146,11 @@ export default {
     isPlaying (player) {
       return !this.teams.every(team => team.every(teamPlayer => teamPlayer.id !== player.id))
     },
-    toggleFromConcours (player) {
+    toggleFromTournament (player) {
       if (this.isPlaying(player)) {
-        this.$store.dispatch('removeFromConcours', { player: player, concours: 'consolante' })
+        this.$store.dispatch('removeFromTournament', { player: player, tournament: 'consolante' })
       } else {
-        this.$store.dispatch('addToConcours', { player: player, concours: 'consolante' })
+        this.$store.dispatch('addToTournament', { player: player, tournament: 'consolante' })
       }
     },
     addPlayer (e) {
@@ -191,7 +191,7 @@ export default {
     opacity: 1;
   }
 
-  .concours-param {
+  .tournament-param {
     margin-top: 10px;
   }
 

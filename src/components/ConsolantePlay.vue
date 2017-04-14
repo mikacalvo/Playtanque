@@ -1,73 +1,39 @@
 <template>
-  <div class="concours-play">
-    <div class="tour col-xs-2" v-for="tour in nbTours">
-      <match v-for="(match, index) in filteredMatchs[tour]" :match="match" :index="index" :key="index"></match>
+  <div class="tournament-play">
+    <div class="round col-xs-2" v-for="round in rounds">
+      <game v-for="(game, index) in consolante.tournaments[tournamentIndex][round]" :tournamentIndex="tournamentIndex" :game="game" :round="round" :index="index" :key="index"></game>
     </div>
   </div>
 </template>
 
 <script>
-import { mapMutations, mapGetters } from 'vuex'
-import Match from './Match.vue'
+import { mapGetters } from 'vuex'
+import Game from './Game.vue'
 
 export default {
-  components: { Match },
-  props: ['consolante', 'concours'],
+  components: { Game },
+  props: ['tournamentIndex'],
   data () {
     return {
-      search: ''
+      localTournament: null
     }
   },
   computed: {
-    ...mapGetters({
-      players: 'allPlayers',
-      matchs: 'matchs'
-    }),
-    filteredMatchs () {
-      console.log(this.matchs[this.concours])
-      return this.matchs[this.concours]
-    },
-    nbTours () {
-      let nb = parseInt(this.consolante.nbTeams / 2)
+    ...mapGetters(['consolante']),
+    rounds () {
+      let nb = this.consolante.tournaments[this.tournamentIndex].length
       let ret = []
       for (var i = 0; i < nb; i++) {
         ret.push(i)
       }
       return ret
     }
-  },
-  watch: {
-    teams: function () {
-    }
-  },
-  methods: {
-    ...mapMutations([
-      'toggleAll',
-      'clearCompleted'
-    ]),
-    doneEdit (e) {
-      var input
-      if (e.target.tagName === 'LABEL') {
-        input = e.target.children[0]
-      } else {
-        input = e.target
-      }
-      const key = input.name
-      const value = parseInt(input.value.trim())
-      this.$store.dispatch('editConsolante', {
-        key: key,
-        value: value
-      })
-    }
-  },
-  created () {
-    // console.log(this.matchs)
   }
 }
 </script>
 
 <style scoped>
-  .match {
+  .game {
     margin: 10px 0;
   }
 </style>

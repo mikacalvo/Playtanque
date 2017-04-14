@@ -6,14 +6,14 @@
           <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
               <li><a :class="{active: currentView == 'ConsolanteParametrage'}" v-on:click="currentView = 'ConsolanteParametrage'" href="#">Paramétrage</a></li>
-              <li><a :class="{disabled: !ready, active: currentView == 'ConsolantePlay' && concours == 0}" v-on:click="go(0)" href="#">Concours A</a></li>
-              <li><a :class="{disabled: !ready, active: currentView == 'ConsolantePlay' && concours == 1}" v-on:click="go(1)" href="#">Concours B</a></li>
+              <li><a :class="{disabled: !ready, active: currentView == 'ConsolantePlay' && tournamentIndex == 0}" v-on:click="go(0)" href="#">Concours A</a></li>
+              <li><a :class="{disabled: !ready, active: currentView == 'ConsolantePlay' && tournamentIndex == 1}" v-on:click="go(1)" href="#">Concours B</a></li>
             </ul>
           </div>
         </div>
       </nav>
       <keep-alive>
-          <component v-bind:is="currentView" :consolante="consolante" :concours="concours"></component>
+          <component v-bind:is="currentView" :tournamentIndex="tournamentIndex"></component>
       </keep-alive>
     </div>
   </div>
@@ -23,35 +23,28 @@
 import { mapGetters } from 'vuex'
 import ConsolanteParametrage from './ConsolanteParametrage'
 import ConsolantePlay from './ConsolantePlay'
-import Sidebar from './Sidebar'
 
 export default {
-  name: 'consolante',
   data () {
     return {
       currentView: 'ConsolanteParametrage',
-      concours: 0
+      tournamentIndex: 0
     }
   },
-  computed: mapGetters({
-    consolante: 'state',
-    ready: 'ready'
-  }),
+  computed: mapGetters(['ready']),
   components: {
     ConsolanteParametrage,
-    ConsolantePlay,
-    Sidebar
+    ConsolantePlay
   },
   methods: {
     go: function (index) {
-      this.concours = index
+      this.tournamentIndex = index
       this.currentView = this.ready ? 'ConsolantePlay' : this.currentView
     }
   }
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
   #consolante {
     padding: 10px
