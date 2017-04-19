@@ -13,11 +13,6 @@ import Game from './Game.vue'
 export default {
   components: { Game },
   props: ['tournamentIndex'],
-  data () {
-    return {
-      localTournament: null
-    }
-  },
   computed: {
     ...mapGetters(['consolante']),
     rounds () {
@@ -33,7 +28,4 @@ export default {
 </script>
 
 <style scoped>
-  .game {
-    margin: 10px 0;
-  }
 </style>

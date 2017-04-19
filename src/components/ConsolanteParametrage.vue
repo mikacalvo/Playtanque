@@ -137,7 +137,7 @@ export default {
         input = e.target
       }
       const key = input.name
-      const value = parseInt(input.value.trim())
+      const value = input.value ? parseInt(input.value.trim()) : ''
       this.$store.dispatch('editConsolante', {
         key: key,
         value: value

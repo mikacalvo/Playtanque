@@ -2,6 +2,7 @@
 // import * as types from '../mutation-types'
 
 // initial state
+// const state =
 const state = JSON.parse(window.localStorage.getItem('playtanque_consolante')) ||
   {
     'ready': false,
@@ -16,7 +17,22 @@ const getters = {
   ready: state => state.ready,
   consolante: state => state,
   allTeams: state => state.teams,
-  tournaments: state => state.tournaments
+  tournaments: state => state.tournaments,
+  findTeam: state => (tournament, round, teamId) => {
+    for (let i = state.tournaments[tournament][round].length - 1; i >= 0; i--) {
+      if (typeof state.tournaments[tournament][round][i] !== 'undefined') {
+        for (let j = state.tournaments[tournament][round][i].length - 1; j >= 0; j--) {
+          if (state.tournaments[tournament][round][i][j].team === teamId) {
+            return {
+              game: i,
+              index: j
+            }
+          }
+        }
+      }
+    }
+    return false
+  }
 }
 
 // actions
@@ -39,17 +55,20 @@ const actions = {
     let nbTournament = 2
     for (let i = 0; i < nbTournament; i++) {
       if (typeof tournaments[i] === 'undefined') {
-        tournaments[i] = []
+        tournaments[i] = [] // rounds
       }
       let nbTours = (Math.log(state.nbTeams) / Math.log(2)) / Math.pow(2, i)
       for (let j = 0; j < nbTours; j++) {
         if (typeof tournaments[i][j] === 'undefined') {
-          tournaments[i][j] = []
+          tournaments[i][j] = [] // games
         }
         let nbGames = state.nbTeams / Math.pow(2, j + 1)
         for (let k = 0; k < nbGames; k++) {
           if (typeof tournaments[i][j][k] === 'undefined') {
-            tournaments[i][j][k] = {}
+            tournaments[i][j][k] = [
+              {team: null, score: null}, // team 1
+              {team: null, score: null} // team 2
+            ]
           }
         }
       }
@@ -57,35 +76,27 @@ const actions = {
     // tour 1
     for (let i = 0; i < state.nbTeams; i++) {
       let j = parseInt(i / 2)
-      let obj = {}
-      obj[i] = 0
-      tournaments[0][0][j] = Object.assign(obj, tournaments[0][0][j])
+      tournaments[0][0][j][i % 2] = {team: i, score: 0}
     }
     commit('setTournaments', tournaments)
   },
 
-  updateGame ({ state, commit, dispatch }, { tournament, round, game, team, value }) {
-    commit('updateScore', {
-      tournament: tournament,
-      round: round,
-      game: game,
-      team: team,
+  updateGame ({ state, commit, dispatch }, { tournament, round, game, index, value }) {
+    commit('updateGame', {
+      game: state.tournaments[tournament][round][game][index],
       value: value
     })
 
     if (value === 13) { // win game, qualify team
-      if (state.tournaments[tournament][round][game][Math.abs(team - 1)] === 13) { // Impossible
-        commit('updateScore', {
-          tournament: tournament,
-          round: round,
-          game: game,
-          team: Math.abs(team - 1),
+      if (state.tournaments[tournament][round][game][Math.abs(index - 1)].score === 13) { // the other can't win too
+        commit('updateGame', {
+          game: state.tournaments[tournament][round][game][Math.abs(index - 1)],
           value: 0
         })
         dispatch('disqualify', {
           tournament: tournament,
           round: round + 1,
-          team: Math.abs(team - 1)
+          teamId: state.tournaments[tournament][round][game][Math.abs(index - 1)].team
         })
       }
 
@@ -93,28 +104,27 @@ const actions = {
         tournament: tournament,
         round: round,
         game: game,
-        team: team
+        teamId: state.tournaments[tournament][round][game][index].team
       })
     } else { // lose game, disqualify team
       dispatch('disqualify', {
         tournament: tournament,
         round: round + 1,
-        team: team
+        teamId: state.tournaments[tournament][round][game][index].team
       })
     }
   },
 
-  disqualify ({ state, commit }, { tournament, round, team }) {
+  disqualify ({ state, commit, getters }, { tournament, round, teamId }) {
     if (round !== state.tournaments[tournament].length) {
-      for (var i = 0; i < state.tournaments[tournament][round].length; i++) {
-        if (typeof state.tournaments[tournament][round][i] !== 'undefined' && typeof state.tournaments[tournament][round][i][team] !== 'undefined') {
-          commit('removeTeamFromGame', {
-            tournament: tournament,
-            round: round,
-            game: i,
-            team: team
-          })
-        }
+      let ret = getters.findTeam(tournament, round, teamId)
+      if (ret !== false) {
+        commit('removeTeamFromGame', {
+          tournament: tournament,
+          round: round,
+          game: ret.game,
+          index: ret.index
+        })
       }
     }
   }
@@ -178,34 +188,19 @@ const mutations = {
     state.teams[team].splice(newIndex, 0, movedItem)
   },
 
-  updateScore (state, { tournament, round, game, team, value }) {
-    state.tournaments[tournament][round][game][team] = value
+  updateGame (state, { game, value }) {
+    Object.assign(game, {score: value})
   },
 
-  updateGame (state, { game, team, value }) {
-    game[team] = value
-  },
-
-  win (state, { tournament, round, game, team }) {
-    if (round + 1 !== state.tournaments[tournament].length) {
-      let clone = Object.assign({}, state.tournaments)
-      let obj = {}
-      obj[team] = 0
-      clone[tournament][round + 1][parseInt(game / 2)] = Object.assign({}, clone[tournament][round + 1][parseInt(game / 2)], obj)
-      state.tournaments = Object.assign({}, clone)
+  win (state, { tournament, round, game, teamId }) {
+    if (round + 1 !== state.tournaments[tournament].length) { // qualify if not final round
+      state.tournaments[tournament][round + 1][parseInt(game / 2)].push({team: teamId, score: 0})
     }
   },
 
-  removeTeamFromGame (state, { tournament, round, game, team }) {
-    if (typeof state.tournaments[tournament][round][game][Math.abs(team - 1)] !== 'undefined') {
-      let obj = {}
-      obj[Math.abs(team - 1)] = state.tournaments[tournament][round][game][Math.abs(team - 1)]
-      state.tournaments[tournament][round][game] = Object.assign(obj, state.tournaments[tournament][round][game])
-    } else {
-      state.tournaments[tournament][round][game] = {}
-    }
+  removeTeamFromGame (state, { tournament, round, game, index }) { // disqualify
+    state.tournaments[tournament][round][game].splice(index)
   }
-
 }
 
 export default {

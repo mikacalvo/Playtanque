@@ -1,0 +1,184 @@
+<div class="container">
+  <div class="row">
+    <div id="app1" class="col-md-12">
+      <tournament-play></tournament-play>
+    </div>
+  </div>
+</div>
+
+<template id="tournamentPlay">
+  <div class="tournament-play">
+    <div class="round col-xs-2" v-for="round in rounds">
+      <game v-for="(index, game) in tournament.tournaments[0][round]" :game="game" :round="round" :index="index" :key="index"></game>
+    </div>
+  </div>
+</template>
+
+<template id="game">
+  <div class="game">
+    <div v-for="(team, score) in game" :key="team">
+      <h5>Équipe {{ parseInt(team) + 1 }}</h5>
+      <select class="score" @change="update(parseInt(team), $event)">
+        <option v-for="value in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]" :value="value" v-html="value" :selected="score == value" :key="value"></option>
+      </select>
+    </div>
+  </div>
+</template>
+
+<style>
+.game {
+  margin: 10px 0;
+  padding: 3px;
+  border: solid red 1px;
+}
+h5 {
+  margin-bottom: 0;
+  font-weight: bold;
+}
+</style>
+
+<script>
+var globalStore = new Vuex.Store({
+  state: {
+    "ready":true,"nbTeams":8,"nbPlayers":3,"teams":[[1,2],[3,4]],
+    "tournaments":[[[{"0":0,"1":0},{"2":0,"3":0}],[{}]],[[{},{}]]]
+  },
+  mutations: {
+    WIN_EVENT(state, { tournament, round, game, team }) {
+      console.log('WIN_EVENT', tournament, round, game, team);
+      if (round + 1 !== state.tournaments[tournament].length) {
+        const oldGame = state.tournaments[tournament][round + 1][parseInt(game / 2)]
+        let obj = {}
+        obj[team] = 0
+        Object.assign(oldGame, obj)
+
+        // let clone = jQuery.extend(true, [], state.tournaments)
+        // let obj = {}
+        // obj[team] = 0
+        // clone[tournament][round + 1][parseInt(game / 2)] = Object.assign(clone[tournament][round + 1][parseInt(game / 2)], obj)
+        // console.log('tournament:' + tournament, 'round:' + (round + 1), 'game:' + parseInt(game / 2), clone[tournament][round + 1][parseInt(game / 2)])
+        // state.tournaments = clone
+      }
+      console.log(state.tournaments)
+      console.log('tournament:' + tournament, 'round:' + (round + 1), 'game:' + parseInt(game / 2), state.tournaments[tournament][round + 1][parseInt(game / 2)])
+    },
+    LOSE_EVENT(state, { tournament, round, team }) {
+      console.log('LOSE_EVENT', tournament, round, team);
+      if (round !== state.tournaments[tournament].length) {
+        for (var i = 0; i < state.tournaments[tournament][round].length; i++) {
+          if (typeof state.tournaments[tournament][round][i] !== 'undefined' && typeof state.tournaments[tournament][round][i][team] !== 'undefined') {
+            let clone = jQuery.extend(true, [], state.tournaments)
+            delete clone[tournament][round][i][team]
+            state.tournaments = clone
+            break
+          }
+        }
+      }
+    },
+    UPDATE_EVENT(state, { tournament, round, game, team, value }) {
+      console.log('UPDATE_EVENT', tournament, round, game, team, value);
+      state.tournaments[tournament][round][game][team] = value
+    }
+  }
+});
+
+var storeActions = {
+  updateGame: (store, { tournament, round, game, team, value }) => {
+    store.dispatch('UPDATE_EVENT', {
+      tournament: tournament,
+      round: round,
+      game: game,
+      team: team,
+      value: value
+    });
+
+    if (value === 13) { // win game, qualify team
+      store.dispatch('WIN_EVENT', {
+        tournament: tournament,
+        round: round,
+        game: game,
+        team: team
+      })
+    } else { // lose game, disqualify team
+      store.dispatch('LOSE_EVENT', {
+        tournament: tournament,
+        round: round + 1,
+        team: team
+      })
+    }
+  }
+};
+
+var Game = {
+  template: '#game',
+  props: {
+    'index': { type: Number, required: true },
+    'round': { type: Number, required: true },
+    'game': { type: Object, required: true }
+  },
+  vuex: {
+    getters: {
+      teams: function(state) {
+        return state.teams.map((team) => {
+          return team.map((player) => {
+            return state.players.all.find(x => x.id === player)
+          })
+        })
+      }
+    },
+    actions: storeActions
+  },
+  methods: {
+    getTeam: function (team) {
+      return this.teams[team]
+    },
+    update: function (team, event) {
+      this.updateGame({
+        tournament: 0,
+        round: this.round,
+        game: this.index,
+        team: team,
+        value: parseInt(event.target.value)
+      })
+    }
+  }
+};
+
+var TournamentPlay = {
+  template: '#tournamentPlay',
+  components: {
+    Game
+  },
+  vuex: {
+    getters: {
+      tournament: function(state) {
+        return state;
+      }
+    },
+    actions: storeActions
+  },
+  computed: {
+    rounds () {
+      let nb = this.tournament.tournaments[0].length
+      let ret = []
+      for (var i = 0; i < nb; i++) {
+        ret.push(i)
+      }
+      return ret
+    }
+  },
+  methods: {
+    update: function(event) {
+      this.winEvent(event);
+    }
+  }
+};
+
+var app = new Vue({
+  el: '#app1',
+  store: globalStore,
+  components: {
+    TournamentPlay
+  }
+});
+</script>
