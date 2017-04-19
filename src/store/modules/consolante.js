@@ -57,18 +57,15 @@ const actions = {
       if (typeof tournaments[i] === 'undefined') {
         tournaments[i] = [] // rounds
       }
-      let nbTours = (Math.log(state.nbTeams) / Math.log(2)) / Math.pow(2, i)
-      for (let j = 0; j < nbTours; j++) {
+      let nbRounds = (Math.log(state.nbTeams) / Math.log(2)) - i
+      for (let j = 0; j < nbRounds; j++) {
         if (typeof tournaments[i][j] === 'undefined') {
           tournaments[i][j] = [] // games
         }
-        let nbGames = state.nbTeams / Math.pow(2, j + 1)
+        let nbGames = state.nbTeams / Math.pow(2, j + i + 1)
         for (let k = 0; k < nbGames; k++) {
           if (typeof tournaments[i][j][k] === 'undefined') {
-            tournaments[i][j][k] = [
-              {team: null, score: null}, // team 1
-              {team: null, score: null} // team 2
-            ]
+            tournaments[i][j][k] = []
           }
         }
       }
@@ -100,17 +97,47 @@ const actions = {
         })
       }
 
-      commit('win', {
+      dispatch('qualify', {
         tournament: tournament,
-        round: round,
+        round: round + 1,
         game: game,
         teamId: state.tournaments[tournament][round][game][index].team
       })
+
+      if (round === 0 && typeof state.tournaments[tournament + 1] !== 'undefined') {
+        // remove team from next tournament
+        dispatch('disqualify', {
+          tournament: tournament + 1,
+          round: round,
+          teamId: state.tournaments[tournament][round][game][index].team
+        })
+        // send losing team to next tournament
+        dispatch('qualify', {
+          tournament: tournament + 1,
+          round: round,
+          game: game,
+          teamId: state.tournaments[tournament][round][game][Math.abs(index - 1)].team
+        })
+      }
     } else { // lose game, disqualify team
       dispatch('disqualify', {
         tournament: tournament,
         round: round + 1,
         teamId: state.tournaments[tournament][round][game][index].team
+      })
+    }
+  },
+
+  qualify ({ state, commit, getters }, { tournament, round, game, teamId }) {
+    if (
+      round !== state.tournaments[tournament].length && // if not final round
+      getters.findTeam(tournament, round, teamId) === false // if not already qualified
+    ) { // then qualify
+      commit('win', {
+        tournament: tournament,
+        round: round,
+        game: game,
+        teamId: teamId
       })
     }
   },
@@ -193,9 +220,7 @@ const mutations = {
   },
 
   win (state, { tournament, round, game, teamId }) {
-    if (round + 1 !== state.tournaments[tournament].length) { // qualify if not final round
-      state.tournaments[tournament][round + 1][parseInt(game / 2)].push({team: teamId, score: 0})
-    }
+    state.tournaments[tournament][round][parseInt(game / 2)].push({team: teamId, score: 0})
   },
 
   removeTeamFromGame (state, { tournament, round, game, index }) { // disqualify
