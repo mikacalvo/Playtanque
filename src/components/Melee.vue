@@ -5,9 +5,8 @@
         <div class="container">
           <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
-              <li><a :class="{active: currentView == 'ConsolanteSettings'}" v-on:click="currentView = 'ConsolanteSettings'" href="#">Paramétrage</a></li>
-              <li><a :class="{disabled: !ready, active: currentView == 'ConsolantePlay' && tournamentIndex == 0}" v-on:click="go(0)" href="#">Concours A</a></li>
-              <li><a :class="{disabled: !ready, active: currentView == 'ConsolantePlay' && tournamentIndex == 1}" v-on:click="go(1)" href="#">Concours B</a></li>
+              <li><a :class="{active: currentView == 'MeleeSettings'}" v-on:click="currentView = 'MeleeSettings'" href="#">Paramétrage</a></li>
+              <li><a :class="{disabled: !ready, active: currentView == 'MeleePlay' && tournamentIndex == 0}" v-on:click="go(0)" href="#">Concours</a></li>
             </ul>
           </div>
         </div>
@@ -21,27 +20,25 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import ConsolanteSettings from './ConsolanteSettings'
-import ConsolantePlay from './ConsolantePlay'
+import MeleeSettings from './MeleeSettings'
+import MeleePlay from './MeleePlay'
 
 export default {
   data () {
     return {
-      currentView: 'ConsolanteSettings',
+      currentView: 'MeleeSettings',
       tournamentIndex: 0
     }
   },
-  computed: mapGetters({
-    'ready': 'consolanteReady'
-  }),
+  computed: mapGetters(['ready']),
   components: {
-    ConsolanteSettings,
-    ConsolantePlay
+    MeleeSettings,
+    MeleePlay
   },
   methods: {
     go: function (index) {
       this.tournamentIndex = index
-      this.currentView = this.ready ? 'ConsolantePlay' : this.currentView
+      this.currentView = this.ready ? 'MeleePlay' : this.currentView
     }
   }
 }

@@ -4,26 +4,43 @@
       <form class="form-horizontal" action="">
         <fieldset>
           <div class="">
-            <label for="nbTeams" class="control-label">
-              Nombre d'équipes
-            </label>
-            <input id="nbTeams" name="nbTeams" type="number" class="form-control" @change="doneEdit" :value="consolante.nbTeams" />
-          </div>
-          <div class="">
-            <label for="nbPlayers" class="control-label">
-              Nombre de joueurs par équipe
+            <label for="nbGroups" class="control-label">
+              Taille des équipes
             </label>
             <div class="btn-group" data-toggle="buttons">
-              <label class="btn" :class="{active: consolante.nbPlayers == 1}" @click="doneEdit">
-                <input type="radio" name="nbPlayers" id="nbPlayers1" autocomplete="off" value="1" >1
+              <label class="btn" :class="{active: supermelee.nbGroups == 1}" @click="doneEdit">
+                <input type="radio" name="nbGroups" id="nbGroups1" autocomplete="off" value="1" >Simple
                 <span class="glyphicon glyphicon-ok"></span>
               </label>
-              <label class="btn" :class="{active: consolante.nbPlayers == 2}" @click="doneEdit">
-                <input type="radio" name="nbPlayers" id="nbPlayers2" autocomplete="off" value="2" >2
+              <label class="btn" :class="{active: supermelee.nbGroups == 2}" @click="doneEdit">
+                <input type="radio" name="nbGroups" id="nbGroups2" autocomplete="off" value="2" >Doublette
                 <span class="glyphicon glyphicon-ok"></span>
               </label>
-              <label class="btn" :class="{active: consolante.nbPlayers == 3}" @click="doneEdit">
-                <input type="radio" name="nbPlayers" id="nbPlayers3" autocomplete="off" value="3" >3
+              <label class="btn" :class="{active: supermelee.nbGroups == 3}" @click="doneEdit">
+                <input type="radio" name="nbGroups" id="nbGroups3" autocomplete="off" value="3" >Triplette
+                <span class="glyphicon glyphicon-ok"></span>
+              </label>
+            </div>
+          </div>
+          <div class="">
+            <label for="nbRounds" class="control-label">
+              Nombre de tours
+            </label>
+            <div class="btn-group" data-toggle="buttons">
+              <label class="btn" :class="{active: supermelee.nbRounds == 1}" @click="doneEdit">
+                <input type="radio" name="nbRounds" id="nbRounds1" autocomplete="off" value="1" >1
+                <span class="glyphicon glyphicon-ok"></span>
+              </label>
+              <label class="btn" :class="{active: supermelee.nbRounds == 2}" @click="doneEdit">
+                <input type="radio" name="nbRounds" id="nbRounds2" autocomplete="off" value="2" >2
+                <span class="glyphicon glyphicon-ok"></span>
+              </label>
+              <label class="btn" :class="{active: supermelee.nbRounds == 3}" @click="doneEdit">
+                <input type="radio" name="nbRounds" id="nbRounds3" autocomplete="off" value="3" >3
+                <span class="glyphicon glyphicon-ok"></span>
+              </label>
+              <label class="btn" :class="{active: supermelee.nbRounds == 4}" @click="doneEdit">
+                <input type="radio" name="nbRounds" id="nbRounds4" autocomplete="off" value="4" >4
                 <span class="glyphicon glyphicon-ok"></span>
               </label>
             </div>
@@ -56,23 +73,23 @@
       <p>
         <small>Rappel : pour éviter un concours avec des tirages blancs, le nombre d'équipes doit être un multiple de 8 : 16, 32, 64, 128.</small>
       </p>
-      <p v-show="consolante.ready">
+      <p v-show="supermelee.ready">
         <strong style="color:red;">Tournament complet : </strong> Avant de le commencer, faites un tirage aléatoire en cliquant sur le bouton <button @click="shuffle"><span class="glyphicon glyphicon-random"></span></button>
       </p>
       <ul class="row teams-list">
-        <consolante-team class="col-xs-6 col-lg-2" v-for="(team, index) in teams" :team="team" :index="index" :key="index"></consolante-team>
+        <supermelee-group class="col-xs-4" v-for="(team, index) in supermeleePlayers" :team="team" :index="index" :key="index"></supermelee-group>
       </ul>
     </div>
   </div>
 </template>
 
 <script>
-import { mapMutations, mapGetters } from 'vuex'
-import ConsolanteTeam from './ConsolanteTeam.vue'
+import { mapGetters, mapActions } from 'vuex'
+import SupermeleeGroup from './SupermeleeGroup.vue'
 import Fuse from 'fuse.js'
 
 export default {
-  components: { ConsolanteTeam },
+  components: { SupermeleeGroup },
   data () {
     return {
       search: '',
@@ -92,9 +109,9 @@ export default {
   },
   computed: {
     ...mapGetters({
-      consolante: 'consolante',
+      supermelee: 'supermelee',
       players: 'allPlayers',
-      teams: 'consolanteTeams'
+      supermeleePlayers: 'supermeleePlayers'
     }),
     filteredPlayers () {
       if (this.search !== '') {
@@ -104,30 +121,9 @@ export default {
       }
     }
   },
-  watch: {
-    teams: function () {
-      var ready = true
-      for (var i = 0; i < this.teams.length; i++) {
-        if (this.teams[i].length !== this.consolante.nbPlayers) {
-          ready = false
-          break
-        }
-      }
-      if (this.consolante.ready !== ready) {
-        this.$store.commit('setConsolante', {
-          key: 'ready',
-          value: ready
-        })
-      }
-      if (ready) {
-        this.$store.dispatch('initTournament')
-      }
-    }
-  },
   methods: {
-    ...mapMutations([
-      'toggleAll',
-      'clearCompleted'
+    ...mapActions([
+      'shuffle'
     ]),
     doneEdit (e) {
       var input
@@ -138,35 +134,17 @@ export default {
       }
       const key = input.name
       const value = input.value ? parseInt(input.value.trim()) : ''
-      this.$store.dispatch('editConsolante', {
-        key: key,
-        value: value
-      })
+      this.$store.dispatch('editSupermelee', [key, value])
     },
     isPlaying (player) {
-      return !this.teams.every(team => team.every(teamPlayer => teamPlayer.id !== player.id))
+      return !this.supermeleePlayers.every(group => group.every(p => p.id !== player.id))
     },
     toggleFromTournament (player) {
       if (this.isPlaying(player)) {
-        this.$store.dispatch('removeFromTournament', { player: player, tournament: 'consolante' })
+        this.$store.commit('removePlayer', player.id)
       } else {
-        this.$store.dispatch('addToTournament', { player: player, tournament: 'consolante' })
+        this.$store.commit('addPlayer', player.id)
       }
-    },
-    addPlayer (e) {
-      var name = this.newPlayer
-      if (name.trim()) {
-        this.$store.commit('addPlayer', { name })
-      }
-      this.newPlayer = ''
-    },
-    shuffle () {
-      var a = this.teams
-      for (let i = a.length; i; i--) {
-        let j = Math.floor(Math.random() * i);
-        [a[i - 1], a[j]] = [a[j], a[i - 1]]
-      }
-      this.$store.commit('setTeams', a)
     }
   },
   created () {

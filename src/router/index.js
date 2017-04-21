@@ -3,8 +3,7 @@ import Router from 'vue-router'
 import Hello from '../components/Hello'
 import Players from '../components/Players'
 import Consolante from '../components/Consolante'
-import ConsolanteParametrage from '../components/ConsolanteParametrage'
-import ConsolantePlay from '../components/ConsolantePlay'
+import Supermelee from '../components/Supermelee'
 import NotFoundComponent from '../components/NotFoundComponent'
 
 Vue.use(Router)
@@ -28,12 +27,9 @@ export default new Router({
       component: Consolante
     },
     {
-      path: '/consolante/parametrage',
-      component: ConsolanteParametrage
-    },
-    {
-      path: '/consolante/play',
-      component: ConsolantePlay
+      path: '/supermelee',
+      name: 'Supermelee',
+      component: Supermelee
     },
     {
       path: '*',

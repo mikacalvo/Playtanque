@@ -14,10 +14,8 @@ const state = JSON.parse(window.localStorage.getItem('playtanque_consolante')) |
 
 // getters
 const getters = {
-  ready: state => state.ready,
   consolante: state => state,
-  allTeams: state => state.teams,
-  tournaments: state => state.tournaments,
+  consolanteReady: state => state.ready,
   findTeam: state => (tournament, round, teamId) => {
     for (let i = state.tournaments[tournament][round].length - 1; i >= 0; i--) {
       if (typeof state.tournaments[tournament][round][i] !== 'undefined') {
@@ -37,7 +35,7 @@ const getters = {
 
 // actions
 const actions = {
-  changePlayerTeam ({ state, commit }, { oldTeamIndex, oldPlayerIndex, newTeamIndex, newPlayerIndex }) {
+  changePlayerTeam ({ state, commit }, oldTeamIndex, oldPlayerIndex, newTeamIndex, newPlayerIndex) {
     commit('addPlayerToTeam', {
       team: newTeamIndex,
       player: state.teams[oldTeamIndex][oldPlayerIndex],
@@ -48,6 +46,15 @@ const actions = {
       begin: oldPlayerIndex,
       end: 1
     })
+  },
+
+  shuffle ({ state, commit }) {
+    var a = state.teams.slice(0)
+    for (let i = a.length; i; i--) {
+      let j = Math.floor(Math.random() * i);
+      [a[i - 1], a[j]] = [a[j], a[i - 1]]
+    }
+    commit('setTeams', a)
   },
 
   initTournament ({ state, commit }) {
@@ -163,11 +170,7 @@ const mutations = {
   },
 
   setTeams (state, teams) {
-    state.teams = teams.map((team) => {
-      return team.map((player) => {
-        return player.id
-      })
-    })
+    state.teams = teams
   },
 
   setTournaments (state, tournaments) {
@@ -210,7 +213,7 @@ const mutations = {
     state.teams = tmp
   },
 
-  movePlayer (state, { team, oldIndex, newIndex }) {
+  consolanteMovePlayer (state, [team, oldIndex, newIndex]) {
     const movedItem = state.teams[team].splice(oldIndex, 1)[0]
     state.teams[team].splice(newIndex, 0, movedItem)
   },

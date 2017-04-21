@@ -17,32 +17,10 @@ export default {
       sortableOptions: {
         group: 'player',
         draggable: '.player',
-        onMove: this.move,
-        onAdd: this.transfer,
-        onUpdate: this.reorder
+        onMove: this.$parent.move,
+        onAdd: this.$parent.transfer,
+        onUpdate: this.$parent.reorder
       }
-    }
-  },
-  methods: {
-    move (evt) {
-      if (evt.to !== evt.from && evt.to.children.length >= this.$store.state.consolante.nbPlayers) {
-        return false
-      }
-    },
-    reorder ({oldIndex, newIndex}) {
-      this.$store.commit('movePlayer', {
-        team: this.index,
-        oldIndex: oldIndex,
-        newIndex: newIndex
-      })
-    },
-    transfer (evt) {
-      this.$store.dispatch('changePlayerTeam', {
-        oldTeamIndex: parseInt(evt.from.dataset.index),
-        oldPlayerIndex: evt.oldIndex,
-        newTeamIndex: parseInt(evt.to.dataset.index),
-        newPlayerIndex: evt.newIndex
-      })
     }
   }
 }

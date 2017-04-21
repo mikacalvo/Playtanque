@@ -12,6 +12,10 @@ const localStoragePlugin = store => {
   store.subscribe((mutation, { consolante }) => {
     window.localStorage.setItem('playtanque_consolante', JSON.stringify(consolante))
   })
+
+  store.subscribe((mutation, { supermelee }) => {
+    window.localStorage.setItem('playtanque_supermelee', JSON.stringify(supermelee))
+  })
 }
 
 export default process.env.NODE_ENV !== 'production'

@@ -15,10 +15,10 @@ export default {
       }
     },
     reorder ({oldIndex, newIndex}) {
-      this.$store.commit('consolanteMovePlayer', [this.index, oldIndex, newIndex])
+      this.$store.commit('supermeleeMovePlayer', [this.index, oldIndex, newIndex])
     },
     transfer (evt) {
-      this.$store.dispatch('changePlayerTeam', [parseInt(evt.from.dataset.index), evt.oldIndex, parseInt(evt.to.dataset.index), evt.newIndex])
+      this.$store.dispatch('changePlayerGroup', [parseInt(evt.from.dataset.index), evt.oldIndex, parseInt(evt.to.dataset.index), evt.newIndex])
     }
   }
 }

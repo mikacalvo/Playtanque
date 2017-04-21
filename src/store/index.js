@@ -4,6 +4,7 @@ import * as actions from './actions'
 import * as getters from './getters'
 import players from './modules/players'
 import consolante from './modules/consolante'
+import supermelee from './modules/supermelee'
 import plugins from './plugins'
 
 Vue.use(Vuex)
@@ -15,7 +16,8 @@ export default new Vuex.Store({
   getters,
   modules: {
     players,
-    consolante
+    consolante,
+    supermelee
   },
   strict: debug,
   plugins

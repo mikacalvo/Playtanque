@@ -5,15 +5,14 @@
         <div class="container">
           <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
-              <li><a :class="{active: currentView == 'ConsolanteSettings'}" v-on:click="currentView = 'ConsolanteSettings'" href="#">Paramétrage</a></li>
-              <li><a :class="{disabled: !ready, active: currentView == 'ConsolantePlay' && tournamentIndex == 0}" v-on:click="go(0)" href="#">Concours A</a></li>
-              <li><a :class="{disabled: !ready, active: currentView == 'ConsolantePlay' && tournamentIndex == 1}" v-on:click="go(1)" href="#">Concours B</a></li>
+              <li><a :class="{active: currentView == 'SupermeleeSettings'}" v-on:click="currentView = 'SupermeleeSettings'" href="#">Paramétrage</a></li>
+              <li><a :class="{disabled: !ready, active: currentView == 'SupermeleePlay' && tournamentIndex == 0}" v-on:click="go(0)" href="#">Concours</a></li>
             </ul>
           </div>
         </div>
       </nav>
       <keep-alive>
-          <component v-bind:is="currentView" :tournamentIndex="tournamentIndex"></component>
+        <component v-bind:is="currentView" :tournamentIndex="tournamentIndex"></component>
       </keep-alive>
     </div>
   </div>
@@ -21,27 +20,27 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import ConsolanteSettings from './ConsolanteSettings'
-import ConsolantePlay from './ConsolantePlay'
+import SupermeleeSettings from './SupermeleeSettings'
+import SupermeleePlay from './SupermeleePlay'
 
 export default {
   data () {
     return {
-      currentView: 'ConsolanteSettings',
+      currentView: 'SupermeleeSettings',
       tournamentIndex: 0
     }
   },
   computed: mapGetters({
-    'ready': 'consolanteReady'
+    'ready': 'supermeleeReady'
   }),
   components: {
-    ConsolanteSettings,
-    ConsolantePlay
+    SupermeleeSettings,
+    SupermeleePlay
   },
   methods: {
     go: function (index) {
       this.tournamentIndex = index
-      this.currentView = this.ready ? 'ConsolantePlay' : this.currentView
+      this.currentView = this.ready ? 'SupermeleePlay' : this.currentView
     }
   }
 }

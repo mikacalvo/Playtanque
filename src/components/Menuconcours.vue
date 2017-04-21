@@ -4,8 +4,8 @@
       <a href="/" class="navbar-brand">Playtanque</a>
       <router-link to="/joueurs">Joueurs</router-link>
       <router-link to="/consolante">Consolante</router-link>
+      <router-link to="/supermelee">Super-Mêlée</router-link>
       <router-link to="/melee">Mêlée</router-link>
-      <router-link to="/points">Points</router-link>
     </nav>
   </header>
 </template>
