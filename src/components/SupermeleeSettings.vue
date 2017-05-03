@@ -71,10 +71,18 @@
 
     <div class="side-body">
       <p>
-        <small>Rappel : pour éviter un concours avec des tirages blancs, le nombre d'équipes doit être un multiple de 8 : 16, 32, 64, 128.</small>
+        Une super-mêlée est un concours où, à chaque tour, les équipes sont composées aléatoirement. Ainsi, on ne tombe jamais avec la même personne dans son équipe et on n'affronte jamais les mêmes personnes (à quelques exceptions près)
+      </p>
+      <p>
+        <small>Rappel : pour éviter un concours avec des tirages blancs, le nombre de joueurs doit être un multiple de 6 comme : 18, 36, 60.</small>
       </p>
       <p v-show="supermelee.ready">
-        <strong style="color:red;">Tournament complet : </strong> Avant de le commencer, faites un tirage aléatoire en cliquant sur le bouton <button @click="shuffle"><span class="glyphicon glyphicon-random"></span></button>
+        <strong style="color:red;">Tournoi OK <span v-if="((supermelee.players[0].length * supermelee.nbGroups) % 6) !== 0">mais avec des tirages blancs </span>:</strong> Avant de le commencer, faites un tirage aléatoire en cliquant sur le bouton <button @click="shuffleSupermelee"><span class="glyphicon glyphicon-random"></span></button>
+      </p>
+      <p>
+        <small>
+          Nombre de joueurs : {{ nbPlayers }}
+        </small>
       </p>
       <ul class="row teams-list">
         <supermelee-group class="col-xs-4" v-for="(team, index) in supermeleePlayers" :team="team" :index="index" :key="index"></supermelee-group>
@@ -119,14 +127,36 @@ export default {
       } else {
         return this.players
       }
+    },
+    nbPlayers () {
+      return this.supermelee.players.reduce(function (a, b) {
+        return a + b.length
+      }, 0)
+    }
+  },
+  watch: {
+    supermeleePlayers: function () {
+      let ready = true
+      let groupPlayers = this.supermelee.players[0].length
+      for (let i = this.supermelee.players.length - 1; i >= 0; i--) {
+        if (groupPlayers !== this.supermelee.players[i].length) {
+          ready = false
+        }
+      }
+      if (this.supermelee.ready !== ready) {
+        this.$store.commit('setSupermelee', ['ready', ready])
+      }
+      if (ready) {
+        this.$store.dispatch('initSupermelee')
+      }
     }
   },
   methods: {
     ...mapActions([
-      'shuffle'
+      'shuffleSupermelee'
     ]),
     doneEdit (e) {
-      var input
+      let input
       if (e.target.tagName === 'LABEL') {
         input = e.target.children[0]
       } else {
@@ -141,9 +171,9 @@ export default {
     },
     toggleFromTournament (player) {
       if (this.isPlaying(player)) {
-        this.$store.commit('removePlayer', player.id)
+        this.$store.commit('removePlayerFromSupermelee', player.id)
       } else {
-        this.$store.commit('addPlayer', player.id)
+        this.$store.commit('addPlayerToSupermelee', player.id)
       }
     }
   },

@@ -57,7 +57,7 @@
         <small>Rappel : pour éviter un concours avec des tirages blancs, le nombre d'équipes doit être un multiple de 8 : 16, 32, 64, 128.</small>
       </p>
       <p v-show="consolante.ready">
-        <strong style="color:red;">Tournament complet : </strong> Avant de le commencer, faites un tirage aléatoire en cliquant sur le bouton <button @click="shuffle"><span class="glyphicon glyphicon-random"></span></button>
+        <strong style="color:red;">Tournament complet : </strong> Avant de le commencer, faites un tirage aléatoire en cliquant sur le bouton <button @click="shuffleConsolante"><span class="glyphicon glyphicon-random"></span></button>
       </p>
       <ul class="row teams-list">
         <consolante-team class="col-xs-6 col-lg-2" v-for="(team, index) in teams" :team="team" :index="index" :key="index"></consolante-team>
@@ -130,7 +130,7 @@ export default {
       'clearCompleted'
     ]),
     ...mapActions([
-      'shuffle'
+      'shuffleConsolante'
     ]),
     doneEdit (e) {
       var input

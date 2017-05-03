@@ -10,9 +10,6 @@ export default {
   components: { Team },
   methods: {
     move (evt) {
-      if (evt.to !== evt.from && evt.to.children.length >= this.$store.state.consolante.nbPlayers) {
-        return false
-      }
     },
     reorder ({oldIndex, newIndex}) {
       this.$store.commit('supermeleeMovePlayer', [this.index, oldIndex, newIndex])

@@ -48,7 +48,7 @@ const actions = {
     })
   },
 
-  shuffle ({ state, commit }) {
+  shuffleConsolante ({ state, commit }) {
     var a = state.teams.slice(0)
     for (let i = a.length; i; i--) {
       let j = Math.floor(Math.random() * i);
