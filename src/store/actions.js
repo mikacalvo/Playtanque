@@ -7,31 +7,28 @@ export const editConsolante = ({ state, commit }, {key, value}) => {
     var max = value > len ? value : len
     for (i = 0; i < max; i++) {
       if (i >= value) {
-        commit('deleteTeam')
+        commit('deleteConsolanteTeam')
       } else if (typeof state.consolante.teams[i] === 'undefined') {
-        commit('addTeam')
+        commit('addConsolanteTeam')
       }
     }
   } else if (key === 'nbPlayers' && value < state.consolante.nbPlayers) { // Remove extra players
     for (i = 0; i < state.consolante.teams.length; i++) {
       if (state.consolante.teams[i].length > value) {
-        commit('removeFromTeam', {
+        commit('removeFromConsolanteTeam', {
           team: state.consolante.teams[i],
           begin: value
         })
       }
     }
   }
-  commit('setConsolante', {
-    key: key,
-    value: value
-  })
+  commit('setConsolante', [key, value])
 }
 
 export const addToTournament = ({ state, commit }, {player, tournament}) => {
   var lastIndex = state[tournament].teams.length - 1
   if (lastIndex === -1) {
-    commit('addTeam')
+    commit('addConsolanteTeam')
     lastIndex++
   } else {
     for (var i = 0; i < state[tournament].teams.length; i++) {
@@ -45,7 +42,7 @@ export const addToTournament = ({ state, commit }, {player, tournament}) => {
   if (lastIndex === null) {
     alert('Concours plein')
   } else {
-    commit('addPlayerToTeam', {
+    commit('addPlayerToConsolanteTeam', {
       team: lastIndex,
       player: player.id
     })
@@ -53,5 +50,5 @@ export const addToTournament = ({ state, commit }, {player, tournament}) => {
 }
 
 export const removeFromTournament = ({ state, commit }, {player, tournament}) => {
-  commit('removePlayer', player.id)
+  commit('removeConsolantePlayer', player.id)
 }

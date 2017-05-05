@@ -13,7 +13,7 @@ const state = JSON.parse(window.localStorage.getItem('playtanque_supermelee')) |
       [], [], []
     ],
     'tournament': [],
-    'uniqueness': []
+    'uniqueness': [{'nb': 12, 'teams': [[[2, 8, 4], [1, 9, 5], [0, 10, 6], [3, 11, 7]], [[2, 9, 6], [1, 8, 7], [0, 11, 4], [3, 10, 5]], [[0, 8, 5], [3, 9, 4], [1, 11, 6], [2, 10, 7]], [[2, 11, 5], [3, 8, 6], [1, 10, 4], [0, 9, 7]]]}, {'nb': 18, 'teams': [[[0, 12, 6], [5, 13, 7], [1, 14, 8], [4, 15, 9], [3, 16, 10], [2, 17, 11]], [[1, 12, 7], [3, 13, 6], [2, 14, 9], [5, 15, 8], [0, 16, 11], [4, 17, 10]], [[2, 12, 8], [4, 13, 11], [0, 14, 7], [5, 16, 6], [1, 15, 10], [3, 17, 9]], [[1, 13, 9], [2, 15, 6], [5, 12, 10], [3, 14, 11], [4, 16, 7], [0, 17, 8]]]}, {'nb': 21, 'teams': [[[1, 14, 7], [4, 15, 8], [2, 16, 9], [6, 17, 10], [0, 18, 11], [3, 19, 12], [5, 20, 13]], [[3, 14, 8], [5, 15, 7], [4, 16, 10], [6, 18, 9], [2, 17, 11], [0, 19, 13], [1, 20, 12]], [[2, 14, 10], [0, 15, 9], [5, 16, 8], [6, 19, 7], [4, 17, 12], [1, 18, 13], [3, 20, 11]], [[1, 15, 10], [5, 14, 9], [0, 16, 7], [4, 19, 11], [3, 17, 13], [6, 20, 8], [2, 18, 12]]]}, {'nb': 24, 'teams': [[[7, 16, 8], [6, 17, 9], [0, 18, 10], [4, 19, 11], [1, 20, 12], [2, 21, 13], [3, 22, 14], [5, 23, 15]], [[2, 16, 9], [7, 17, 10], [6, 18, 8], [1, 19, 13], [4, 20, 14], [5, 21, 11], [3, 23, 12], [0, 22, 15]], [[7, 18, 9], [6, 16, 10], [1, 17, 8], [5, 19, 12], [0, 20, 11], [3, 21, 15], [4, 22, 13], [2, 23, 14]], [[7, 19, 14], [4, 16, 12], [3, 17, 11], [1, 18, 15], [5, 20, 8], [2, 22, 10], [0, 21, 9], [6, 23, 13]]]}]
   }
 
 // getters
@@ -65,7 +65,7 @@ const getters = {
       return obj.nb === nbplayers
     })
     if (uniqueComb.length > 0) {
-      return uniqueComb[0].combinations.map((round) => {
+      return uniqueComb[0].teams.map((round) => {
         return round.map((team) => {
           return team.map((player) => {
             return correspondances[player]
@@ -350,8 +350,7 @@ const actions = {
         [a[i][j - 1], a[i][k]] = [a[i][k], a[i][j - 1]]
       }
     }
-    // commit('setSupermeleePlayers', a)
-    dispatch('initSupermelee')
+    commit('setSupermeleePlayers', a)
   },
 
   saveUniqueness ({ commit }, equipes) {
@@ -397,15 +396,15 @@ const actions = {
     // }
   },
 
-  updateGame ({ state, commit, dispatch }, { tournament, round, game, index, value }) {
-    commit('updateGame', {
+  updateSupermeleeGame ({ state, commit, dispatch }, { tournament, round, game, index, value }) {
+    commit('updateSupermeleeGame', {
       game: state.tournaments[tournament][round][game][index],
       value: value
     })
 
     if (value === 13) { // win game, qualify team
       if (state.tournaments[tournament][round][game][Math.abs(index - 1)].score === 13) { // the other can't win too
-        commit('updateGame', {
+        commit('updateSupermeleeGame', {
           game: state.tournaments[tournament][round][game][Math.abs(index - 1)],
           value: 0
         })
@@ -513,7 +512,7 @@ const mutations = {
     state.tournament = tournament
   },
 
-  updateGame (state, { game, value }) {
+  updateSupermeleeGame (state, { game, value }) {
     Object.assign(game, {score: value})
   },
 

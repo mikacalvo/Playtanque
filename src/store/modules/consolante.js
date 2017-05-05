@@ -35,13 +35,13 @@ const getters = {
 
 // actions
 const actions = {
-  changePlayerTeam ({ state, commit }, oldTeamIndex, oldPlayerIndex, newTeamIndex, newPlayerIndex) {
-    commit('addPlayerToTeam', {
+  changeConsolantePlayerTeam ({ state, commit }, oldTeamIndex, oldPlayerIndex, newTeamIndex, newPlayerIndex) {
+    commit('addPlayerToConsolanteTeam', {
       team: newTeamIndex,
       player: state.teams[oldTeamIndex][oldPlayerIndex],
       index: newPlayerIndex
     })
-    commit('removeFromTeam', {
+    commit('removeFromConsolanteTeam', {
       team: state.teams[oldTeamIndex],
       begin: oldPlayerIndex,
       end: 1
@@ -54,7 +54,7 @@ const actions = {
       let j = Math.floor(Math.random() * i);
       [a[i - 1], a[j]] = [a[j], a[i - 1]]
     }
-    commit('setTeams', a)
+    commit('setConsolante', ['teams', a])
   },
 
   initTournament ({ state, commit }) {
@@ -82,18 +82,18 @@ const actions = {
       let j = parseInt(i / 2)
       tournaments[0][0][j][i % 2] = {team: i, score: 0}
     }
-    commit('setTournaments', tournaments)
+    commit('setConsolante', ['tournaments', tournaments])
   },
 
-  updateGame ({ state, commit, dispatch }, { tournament, round, game, index, value }) {
-    commit('updateGame', {
+  updateConsolanteGame ({ state, commit, dispatch }, { tournament, round, game, index, value }) {
+    commit('updateConsolanteGame', {
       game: state.tournaments[tournament][round][game][index],
       value: value
     })
 
     if (value === 13) { // win game, qualify team
       if (state.tournaments[tournament][round][game][Math.abs(index - 1)].score === 13) { // the other can't win too
-        commit('updateGame', {
+        commit('updateConsolanteGame', {
           game: state.tournaments[tournament][round][game][Math.abs(index - 1)],
           value: 0
         })
@@ -136,11 +136,12 @@ const actions = {
   },
 
   qualify ({ state, commit, getters }, { tournament, round, game, teamId }) {
+    console.log('qualify')
     if (
       round !== state.tournaments[tournament].length && // if not final round
       getters.findTeam(tournament, round, teamId) === false // if not already qualified
     ) { // then qualify
-      commit('win', {
+      commit('winConsolanteGame', {
         tournament: tournament,
         round: round,
         game: game,
@@ -153,7 +154,7 @@ const actions = {
     if (round !== state.tournaments[tournament].length) {
       let ret = getters.findTeam(tournament, round, teamId)
       if (ret !== false) {
-        commit('removeTeamFromGame', {
+        commit('removeTeamFromConsolanteGame', {
           tournament: tournament,
           round: round,
           game: ret.game,
@@ -165,23 +166,15 @@ const actions = {
 }
 
 const mutations = {
-  setConsolante (state, {key, value}) {
+  setConsolante (state, [key, value]) {
     state[key] = value
   },
 
-  setTeams (state, teams) {
-    state.teams = teams
-  },
-
-  setTournaments (state, tournaments) {
-    state.tournaments = tournaments
-  },
-
-  addTeam (state) {
+  addConsolanteTeam (state) {
     state.teams.push([])
   },
 
-  deleteTeam (state, index) {
+  deleteConsolanteTeam (state, index) {
     if (index >= 0) {
       state.teams.splice(index, 1)
     } else {
@@ -189,7 +182,7 @@ const mutations = {
     }
   },
 
-  removeFromTeam (state, { team, begin, end }) {
+  removeFromConsolanteTeam (state, { team, begin, end }) {
     if (typeof end !== 'undefined') {
       team.splice(begin, end)
     } else {
@@ -197,7 +190,7 @@ const mutations = {
     }
   },
 
-  addPlayerToTeam (state, { team, player, index }) {
+  addPlayerToConsolanteTeam (state, { team, player, index }) {
     if (index >= 0) {
       state.teams[team].splice(index, 0, player)
     } else {
@@ -205,7 +198,7 @@ const mutations = {
     }
   },
 
-  removePlayer (state, player) {
+  removeConsolantePlayer (state, player) {
     var tmp = []
     for (var i = 0; i < state.nbTeams; i++) {
       tmp[i] = state.teams[i].filter(p => p !== player)
@@ -213,21 +206,21 @@ const mutations = {
     state.teams = tmp
   },
 
-  consolanteMovePlayer (state, [team, oldIndex, newIndex]) {
+  moveConsolantePlayer (state, [team, oldIndex, newIndex]) {
     const movedItem = state.teams[team].splice(oldIndex, 1)[0]
     state.teams[team].splice(newIndex, 0, movedItem)
   },
 
-  updateGame (state, { game, value }) {
+  updateConsolanteGame (state, { game, value }) {
     Object.assign(game, {score: value})
   },
 
-  win (state, { tournament, round, game, teamId }) {
+  winConsolanteGame (state, { tournament, round, game, teamId }) {
     state.tournaments[tournament][round][parseInt(game / 2)].push({team: teamId, score: 0})
   },
 
-  removeTeamFromGame (state, { tournament, round, game, index }) { // disqualify
-    state.tournaments[tournament][round][game].splice(index)
+  removeTeamFromConsolanteGame (state, { tournament, round, game, index }) { // disqualify
+    state.tournaments[tournament][round][game].splice(index, 1)
   }
 }
 

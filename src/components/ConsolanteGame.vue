@@ -31,7 +31,7 @@ export default {
     },
     update (index, event) {
       if (parseInt(event.target.value) === 13 && this.game[Math.abs(index - 1)] === 13) {
-        this.$store.dispatch('updateGame', {
+        this.$store.dispatch('updateConsolanteGame', {
           tournament: this.tournamentIndex,
           round: this.round,
           game: this.index,
@@ -39,7 +39,7 @@ export default {
           value: 0
         })
       }
-      this.$store.dispatch('updateGame', {
+      this.$store.dispatch('updateConsolanteGame', {
         tournament: this.tournamentIndex,
         round: this.round,
         game: this.index,
