@@ -320,22 +320,22 @@ const actions = {
       let max = value > len ? value : len
       for (i = 0; i < max; i++) {
         if (i >= value) {
-          commit('deleteGroup')
+          commit('deleteSupermeleeGroup')
         } else if (typeof state.players[i] === 'undefined') {
-          commit('addGroup')
+          commit('addSupermeleeGroup')
         }
       }
     }
     commit('setSupermelee', [key, value])
   },
 
-  changePlayerGroup ({ state, commit }, [oldGroupIndex, oldPlayerIndex, newGroupIndex, newPlayerIndex]) {
-    commit('addPlayerToGroup', {
+  changeSupermeleePlayerGroup ({ state, commit }, [oldGroupIndex, oldPlayerIndex, newGroupIndex, newPlayerIndex]) {
+    commit('addPlayerToSupermeleeGroup', {
       group: state.players[newGroupIndex],
       player: state.players[oldGroupIndex][oldPlayerIndex],
       index: newPlayerIndex
     })
-    commit('removePlayerFromGroup', {
+    commit('removePlayerFromSupermeleeGroup', {
       group: state.players[oldGroupIndex],
       begin: oldPlayerIndex,
       end: 1
@@ -350,7 +350,7 @@ const actions = {
         [a[i][j - 1], a[i][k]] = [a[i][k], a[i][j - 1]]
       }
     }
-    commit('setSupermeleePlayers', a)
+    commit('setSupermelee', ['players', a])
   },
 
   saveUniqueness ({ commit }, equipes) {
@@ -368,7 +368,7 @@ const actions = {
       })
     })
 
-    commit('addUniqueness', tmp)
+    commit('addSupermeleeUniqueness', tmp)
   },
 
   initSupermelee ({ state, commit, getters, dispatch }) {
@@ -452,19 +452,15 @@ const mutations = {
     state[key] = value
   },
 
-  setSupermeleePlayers (state, players) {
-    state.players = players
-  },
-
   addPlayerToSupermelee (state, player) {
     state.players[0].push(player)
   },
 
-  addGroup (state) {
+  addSupermeleeGroup (state) {
     state.players.push([])
   },
 
-  deleteGroup (state, index) {
+  deleteSupermeleeGroup (state, index) {
     if (index >= 0) {
       state.players.splice(index, 1)
     } else {
@@ -472,7 +468,7 @@ const mutations = {
     }
   },
 
-  addPlayerToGroup (state, { group, player, index }) {
+  addPlayerToSupermeleeGroup (state, { group, player, index }) {
     if (index >= 0) {
       group.splice(index, 0, player)
     } else {
@@ -488,7 +484,7 @@ const mutations = {
     state.players = tmp
   },
 
-  removePlayerFromGroup (state, { group, begin, end }) {
+  removePlayerFromSupermeleeGroup (state, { group, begin, end }) {
     if (typeof end !== 'undefined') {
       group.splice(begin, end)
     } else {
@@ -496,31 +492,27 @@ const mutations = {
     }
   },
 
-  supermeleeMovePlayer (state, [group, oldIndex, newIndex]) {
+  moveSupermeleePlayer (state, [group, oldIndex, newIndex]) {
     const movedItem = state.players[group].splice(oldIndex, 1)[0]
     state.players[group].splice(newIndex, 0, movedItem)
   },
 
-  addUniqueness (state, value) {
+  addSupermeleeUniqueness (state, value) {
     state.uniqueness.push({
       nb: state.players[0].length * state.nbGroups,
       combinations: value
     })
   },
 
-  setTournament (state, tournament) {
-    state.tournament = tournament
-  },
-
   updateSupermeleeGame (state, { game, value }) {
     Object.assign(game, {score: value})
   },
 
-  win (state, { tournament, round, game, teamId }) {
+  winSupermeleeGame (state, { tournament, round, game, teamId }) {
     state.tournaments[tournament][round][parseInt(game / 2)].push({team: teamId, score: 0})
   },
 
-  lose (state, { tournament, round, game, teamId }) {
+  loseSupermeleeGame (state, { tournament, round, game, teamId }) {
     state.tournaments[tournament][round][parseInt(game / 2)].push({team: teamId, score: 0})
   }
 }

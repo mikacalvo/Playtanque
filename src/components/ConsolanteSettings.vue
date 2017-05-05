@@ -114,10 +114,7 @@ export default {
         }
       }
       if (this.consolante.ready !== ready) {
-        this.$store.commit('setConsolante', {
-          key: 'ready',
-          value: ready
-        })
+        this.$store.commit('setConsolante', ['ready', ready])
       }
       if (ready) {
         this.$store.dispatch('initTournament')
@@ -141,19 +138,16 @@ export default {
       }
       const key = input.name
       const value = input.value ? parseInt(input.value.trim()) : ''
-      this.$store.dispatch('editConsolante', {
-        key: key,
-        value: value
-      })
+      this.$store.dispatch('editConsolante', [key, value])
     },
     isPlaying (player) {
       return !this.teams.every(team => team.every(teamPlayer => teamPlayer.id !== player.id))
     },
     toggleFromTournament (player) {
       if (this.isPlaying(player)) {
-        this.$store.dispatch('removeFromTournament', { player: player, tournament: 'consolante' })
+        this.$store.commit('removeConsolantePlayer', player.id)
       } else {
-        this.$store.dispatch('addToTournament', { player: player, tournament: 'consolante' })
+        this.$store.dispatch('addToConsolante', player)
       }
     }
   },

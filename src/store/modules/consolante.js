@@ -35,6 +35,55 @@ const getters = {
 
 // actions
 const actions = {
+  editConsolante ({ state, commit }, [key, value]) {
+    var i
+    if (key === 'nbTeams') {
+      var len = state.consolante.teams.length
+      var max = value > len ? value : len
+      for (i = 0; i < max; i++) {
+        if (i >= value) {
+          commit('deleteConsolanteTeam')
+        } else if (typeof state.consolante.teams[i] === 'undefined') {
+          commit('addConsolanteTeam')
+        }
+      }
+    } else if (key === 'nbPlayers' && value < state.consolante.nbPlayers) { // Remove extra players
+      for (i = 0; i < state.consolante.teams.length; i++) {
+        if (state.consolante.teams[i].length > value) {
+          commit('removeFromConsolanteTeam', {
+            team: state.consolante.teams[i],
+            begin: value
+          })
+        }
+      }
+    }
+    commit('setConsolante', [key, value])
+  },
+
+  addToConsolante ({ state, commit }, player) {
+    var lastIndex = state.teams.length - 1
+    if (lastIndex === -1) {
+      commit('addConsolanteTeam')
+      lastIndex++
+    } else {
+      for (var i = 0; i < state.teams.length; i++) {
+        if (state.teams[i].length < state.nbPlayers) {
+          lastIndex = i
+          break
+        }
+        lastIndex = null
+      }
+    }
+    if (lastIndex === null) {
+      alert('Concours plein')
+    } else {
+      commit('addPlayerToConsolanteTeam', {
+        team: lastIndex,
+        player: player.id
+      })
+    }
+  },
+
   changeConsolantePlayerTeam ({ state, commit }, oldTeamIndex, oldPlayerIndex, newTeamIndex, newPlayerIndex) {
     commit('addPlayerToConsolanteTeam', {
       team: newTeamIndex,

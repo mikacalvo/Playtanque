@@ -12,10 +12,10 @@ export default {
     move (evt) {
     },
     reorder ({oldIndex, newIndex}) {
-      this.$store.commit('supermeleeMovePlayer', [this.index, oldIndex, newIndex])
+      this.$store.commit('moveSupermeleePlayer', [this.index, oldIndex, newIndex])
     },
     transfer (evt) {
-      this.$store.dispatch('changePlayerGroup', [parseInt(evt.from.dataset.index), evt.oldIndex, parseInt(evt.to.dataset.index), evt.newIndex])
+      this.$store.dispatch('changeSupermeleePlayerGroup', [parseInt(evt.from.dataset.index), evt.oldIndex, parseInt(evt.to.dataset.index), evt.newIndex])
     }
   }
 }
