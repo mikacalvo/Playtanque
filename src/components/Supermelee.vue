@@ -6,7 +6,8 @@
           <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
               <li><a :class="{active: currentView == 'SupermeleeSettings'}" v-on:click="currentView = 'SupermeleeSettings'" href="#">Paramétrage</a></li>
-              <li><a :class="{disabled: !ready, active: currentView == 'SupermeleePlay'}" v-on:click="go(0)" href="#">Concours</a></li>
+              <li><a :class="{disabled: !ready, active: currentView == 'SupermeleePlay'}" v-on:click="go('SupermeleePlay')" href="#">Concours</a></li>
+              <li><a :class="{disabled: !ready, active: currentView == 'SupermeleeResult'}" v-on:click="go('SupermeleeResult')" href="#">Résultats</a></li>
             </ul>
           </div>
         </div>
@@ -22,6 +23,7 @@
 import { mapGetters } from 'vuex'
 import SupermeleeSettings from './SupermeleeSettings'
 import SupermeleePlay from './SupermeleePlay'
+import SupermeleeResult from './SupermeleeResult'
 
 export default {
   data () {
@@ -34,11 +36,12 @@ export default {
   }),
   components: {
     SupermeleeSettings,
-    SupermeleePlay
+    SupermeleePlay,
+    SupermeleeResult
   },
   methods: {
-    go: function (index) {
-      this.currentView = this.ready ? 'SupermeleePlay' : this.currentView
+    go: function (component) {
+      this.currentView = this.ready ? component : this.currentView
     }
   }
 }

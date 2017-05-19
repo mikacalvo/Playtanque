@@ -25,6 +25,7 @@ const getters = {
   supermeleeLoading: state => state.loading,
   supermeleeTournament: state => state.tournament,
   supermeleeTeams: state => state.tournament.teams,
+  supermeleeResults: state => state.tournament.teams,
   combinations: () => {
     var indices = []
     var lengths = []
@@ -217,7 +218,7 @@ const getters = {
     var ret = false
     var res = false
 
-    var matchs = []
+    var games = []
     var playingAgainst = []
     var tmpEquipes = teams.slice(0)
     var roundIterator
@@ -272,7 +273,7 @@ const getters = {
       while (equipeIndex < teams.length) {
         equipeIndex = 0
         if (typeof roundGames[numeroMatch] === 'undefined') { // La première équipe peut être n'importe laquelle non déjà utilisée
-          while (isUsed(matchs.concat(roundGames), equipeIndex)) {
+          while (isUsed(games.concat(roundGames), equipeIndex)) {
             equipeIndex++
           }
           if (equipeIndex < teams.length) {
@@ -282,7 +283,7 @@ const getters = {
         } else { // Pour la deuxième, on reteste tout le monde
           opponentIndex = 0
           while (opponentIndex < teams.length) {
-            if (!isUsed(matchs.concat(roundGames), opponentIndex)) {
+            if (!isUsed(games.concat(roundGames), opponentIndex)) {
               if (!testPlayingAgainst(teams[opponentIndex])) {
                 roundGames[numeroMatch].push(opponentIndex)
                 addPlayingAgainst(teams[roundGames[numeroMatch][0]], teams[opponentIndex])
@@ -301,7 +302,7 @@ const getters = {
     }
 
     function get () {
-      matchs = []
+      games = []
       playingAgainst = []
       for (var t = 0; t < state.players.length; t++) {
         for (var tt = 0; tt < state.players[t].length; tt++) {
@@ -309,7 +310,7 @@ const getters = {
         }
       }
       for (roundIterator = 0; roundIterator < state.nbRounds; roundIterator++) {
-        matchs[roundIterator] = []
+        games[roundIterator] = []
         res = false
         while (res === false && thresholdRound < 5) { // state.players[0].length * 100
           getters.shuffle(tmpEquipes[roundIterator])
@@ -317,12 +318,12 @@ const getters = {
           thresholdRound++
         }
         if (res) {
-          matchs[roundIterator] = res
+          games[roundIterator] = res
         } else {
           return false
         }
       }
-      return matchs
+      return games
     }
     while (ret === false && threshold < 20) { // state.players[0].length * 100
       ret = get()
@@ -398,7 +399,6 @@ const actions = {
   },
 
   initSupermelee ({ state, commit, getters, dispatch }) {
-    console.log('initSupermelee')
     let uniquenessThreshold = 0
     var teams = getters.getTeamsFromUniqueness()
     var games = getters.getGamesFromUniqueness()
@@ -424,63 +424,31 @@ const actions = {
         }
       }
     }
-    console.log(teams)
-    console.log(games)
     commit('setSupermelee', ['tournament', {
       teams: teams,
-      games: games
+      games: games.map((round) => {
+        return round.map((game) => {
+          return [
+            {
+              team: game[0],
+              score: 0
+            },
+            {
+              team: game[1],
+              score: 0
+            }
+          ]
+        })
+      })
     }])
     commit('setSupermelee', ['loading', false])
   },
 
-  updateSupermeleeGame ({ state, commit, dispatch }, { tournament, round, game, index, value }) {
+  updateSupermeleeGame ({ state, commit, dispatch }, { round, game, index, value }) {
     commit('updateSupermeleeGame', {
-      game: state.tournaments[tournament][round][game][index],
+      game: state.tournament.games[round][game][index],
       value: value
     })
-
-    if (value === 13) { // win game, qualify team
-      if (state.tournaments[tournament][round][game][Math.abs(index - 1)].score === 13) { // the other can't win too
-        commit('updateSupermeleeGame', {
-          game: state.tournaments[tournament][round][game][Math.abs(index - 1)],
-          value: 0
-        })
-        dispatch('disqualify', {
-          tournament: tournament,
-          round: round + 1,
-          teamId: state.tournaments[tournament][round][game][Math.abs(index - 1)].team
-        })
-      }
-
-      dispatch('qualify', {
-        tournament: tournament,
-        round: round + 1,
-        game: game,
-        teamId: state.tournaments[tournament][round][game][index].team
-      })
-
-      if (round === 0 && typeof state.tournaments[tournament + 1] !== 'undefined') {
-        // remove team from next tournament
-        dispatch('disqualify', {
-          tournament: tournament + 1,
-          round: round,
-          teamId: state.tournaments[tournament][round][game][index].team
-        })
-        // send losing team to next tournament
-        dispatch('qualify', {
-          tournament: tournament + 1,
-          round: round,
-          game: game,
-          teamId: state.tournaments[tournament][round][game][Math.abs(index - 1)].team
-        })
-      }
-    } else { // lose game, disqualify team
-      dispatch('disqualify', {
-        tournament: tournament,
-        round: round + 1,
-        teamId: state.tournaments[tournament][round][game][index].team
-      })
-    }
   }
 }
 
@@ -544,14 +512,6 @@ const mutations = {
 
   updateSupermeleeGame (state, { game, value }) {
     Object.assign(game, {score: value})
-  },
-
-  winSupermeleeGame (state, { tournament, round, game, teamId }) {
-    state.tournaments[tournament][round][parseInt(game / 2)].push({team: teamId, score: 0})
-  },
-
-  loseSupermeleeGame (state, { tournament, round, game, teamId }) {
-    state.tournaments[tournament][round][parseInt(game / 2)].push({team: teamId, score: 0})
   }
 }
 
