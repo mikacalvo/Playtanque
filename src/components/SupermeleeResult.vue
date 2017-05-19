@@ -1,8 +1,8 @@
 <template>
   <main class="container pt-5">
-    <table class="table table-bordered table-definition mb-5">
+    <table class="table table-bordered table-striped table-definition mb-5">
         <thead class="table-warning">
-            <tr>
+            <tr class="row-name">
                 <th>Joueur</th>
                 <th>Pour</th>
                 <th>Contre</th>
@@ -12,9 +12,9 @@
             </tr>
         </thead>
         <tbody>
-            <tr v-for="result in supermeleeResults">
-                <td>{{ result.player.name }}</td>
-                <td>{{ result.for }}</td>
+            <tr class="row-content" v-for="result in supermeleeResults">
+                <td>{{ getPlayerName(result.player) }}</td>
+                <td>{{ result.fors }}</td>
                 <td>{{ result.against }}</td>
                 <td>{{ result.diff }}</td>
                 <td>{{ result.win }}</td>
@@ -24,7 +24,7 @@
         <tfoot>
             <tr>
                 <th></th>
-                <th colspan="4">
+                <th colspan="5">
                     <button class="btn btn-primary float-right">Add User</button>
                     <button class="btn btn-default">Approve</button>
                     <button class="btn btn-default">Approve All</button>
@@ -40,75 +40,28 @@ import { mapGetters } from 'vuex'
 
 export default {
   computed: {
-    ...mapGetters(['supermeleeResults'])
+    ...mapGetters(['supermeleeResults', 'allPlayers'])
+  },
+  methods: {
+    getPlayerName (player) {
+      return this.allPlayers.find(x => x.id === player).name
+    }
   }
 }
 </script>
 
 <style scoped>
-.table {
-    border: none;
+table {
+  border-bottom: 8px solid #448aff;
 }
-
-.table-definition thead th:first-child {
-    pointer-events: none;
-    background: white;
-    border: none;
+tr.row-name {
+  font-size: 18px;
+  color:#448aff;
 }
-
-.table td {
-    vertical-align: middle;
+tr.row-content {
+  color:#6c7173;
 }
-
-.page-item > * {
-    border: none;
-}
-
-.custom-checkbox {
-  min-height: 1rem;
-  padding-left: 0;
-  margin-right: 0;
-  cursor: pointer;
-}
-.custom-checkbox .custom-control-indicator {
-  content: "";
-  display: inline-block;
-  position: relative;
-  width: 30px;
-  height: 10px;
-  background-color: #818181;
-  border-radius: 15px;
-  margin-right: 10px;
-  -webkit-transition: background .3s ease;
-  transition: background .3s ease;
-  vertical-align: middle;
-  margin: 0 16px;
-  box-shadow: none;
-}
-.custom-checkbox .custom-control-indicator:after {
-  content: "";
-  position: absolute;
-  display: inline-block;
-  width: 18px;
-  height: 18px;
-  background-color: #f1f1f1;
-  border-radius: 21px;
-  box-shadow: 0 1px 3px 1px rgba(0, 0, 0, 0.4);
-  left: -2px;
-  top: -4px;
-  -webkit-transition: left .3s ease, background .3s ease, box-shadow .1s ease;
-  transition: left .3s ease, background .3s ease, box-shadow .1s ease;
-}
-.custom-checkbox .custom-control-input:checked ~ .custom-control-indicator {
-  background-color: #84c7c1;
-  background-image: none;
-  box-shadow: none !important;
-}
-  .custom-checkbox .custom-control-input:checked ~ .custom-control-indicator:after {
-    background-color: #84c7c1;
-    left: 15px;
-  }
-.custom-checkbox .custom-control-input:focus ~ .custom-control-indicator {
-  box-shadow: none !important;
+.table-striped>tbody>tr:nth-of-type(odd) {
+    background:#F0F2F2 !important;
 }
 </style>

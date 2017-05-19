@@ -25,7 +25,40 @@ const getters = {
   supermeleeLoading: state => state.loading,
   supermeleeTournament: state => state.tournament,
   supermeleeTeams: state => state.tournament.teams,
-  supermeleeResults: state => state.tournament.teams,
+  // supermeleePlayers: state => state.players.reduce((a, b) => a.concat(b), []),
+  supermeleeResults: state => state.players.reduce((a, b) => a.concat(b), []).map((player) => {
+    let scores = []
+    let fors = 0
+    let against = 0
+    let wins = 0
+
+    for (let i = state.tournament.games.length - 1; i >= 0; i--) {
+      state.tournament.games[i]
+      for (let j = state.tournament.games[i].length - 1; j >= 0; j--) {
+        for (let k = state.tournament.games[i][j].length - 1; k >= 0; k--) {
+          if (state.tournament.teams[i][state.tournament.games[i][j][k].team].indexOf(player) !== -1) {
+            fors += state.tournament.games[i][j][k].score
+            against += state.tournament.games[i][j][Math.abs(k - 1)].score
+            scores.push(state.tournament.games[i][j][k].score)
+            if (state.tournament.games[i][j][k].score === 13) {
+              wins++
+            }
+          }
+        }
+      }
+    }
+    let diff = fors - against
+    let total = fors - against + wins
+
+    return {
+      player: player,
+      wins: wins,
+      fors: fors,
+      against: against,
+      diff: diff,
+      total: total
+    }
+  }),
   combinations: () => {
     var indices = []
     var lengths = []
