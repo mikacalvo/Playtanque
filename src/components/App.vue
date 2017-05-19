@@ -16,17 +16,22 @@
       </nav>
       <router-view></router-view>
     </div>
+    <footer>
+      <cookie-law theme="dark-lime" message="Ce site internet utilise des cookies pour proposer la meilleure expérience utilisateur possible." buttonText="J'ai compris !"></cookie-law>
+    </footer>
   </div>
 </template>
 
 <script>
   import Hello from './Hello'
   import Menuconcours from './Menuconcours'
+  import CookieLaw from 'vue-cookie-law'
 
   export default {
     components: {
       Hello,
-      Menuconcours
+      Menuconcours,
+      CookieLaw
     }
   }
 </script>

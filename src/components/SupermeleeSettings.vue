@@ -77,7 +77,7 @@
         <small>Rappel : pour éviter un concours avec des tirages blancs, le nombre de joueurs doit être un multiple de 6 comme : 18, 36, 60.</small>
       </p>
       <p v-show="supermelee.ready">
-        <strong style="color:red;">Tournoi OK <span v-if="((supermelee.players[0].length * supermelee.nbGroups) % 6) !== 0">mais avec des tirages blancs </span>:</strong> Avant de le commencer, faites un tirage aléatoire en cliquant sur le bouton <button @click="shuffleSupermelee"><span class="glyphicon glyphicon-random"></span></button>
+        <strong style="color:red;">Tournoi OK <span v-if="((supermelee.players[0].length * supermelee.nbGroups) % 6) !== 0">mais avec des tirages blancs </span>:</strong> Avant de le commencer, faites un tirage aléatoire en cliquant sur le bouton <button @click="localShuffleSupermelee" v-show="!loading"><span class="glyphicon glyphicon-random"></span></button><span class="glyphicon glyphicon-repeat gly-spin" v-show="loading"></span>
       </p>
       <p>
         <small>
@@ -117,6 +117,7 @@ export default {
   },
   computed: {
     ...mapGetters({
+      loading: 'supermeleeLoading',
       supermelee: 'supermelee',
       players: 'allPlayers',
       supermeleePlayers: 'supermeleePlayers'
@@ -146,9 +147,6 @@ export default {
       if (this.supermelee.ready !== ready) {
         this.$store.commit('setSupermelee', ['ready', ready])
       }
-      if (ready) {
-        this.$store.dispatch('initSupermelee')
-      }
     }
   },
   methods: {
@@ -169,6 +167,13 @@ export default {
     isPlaying (player) {
       return !this.supermeleePlayers.every(group => group.every(p => p.id !== player.id))
     },
+    localShuffleSupermelee () {
+      this.$store.commit('setSupermelee', ['loading', true])
+      this.$store.dispatch('shuffleSupermelee')
+      setTimeout(function () {
+        this.$store.dispatch('initSupermelee')
+      }.bind(this), 100)
+    },
     toggleFromTournament (player) {
       if (this.isPlaying(player)) {
         this.$store.commit('removePlayerFromSupermelee', player.id)
@@ -178,6 +183,7 @@ export default {
     }
   },
   created () {
+    this.$store.commit('setSupermelee', ['loading', false])
     this.fuse = new Fuse(this.players, this.options)
   }
 }

@@ -6,13 +6,13 @@
           <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
               <li><a :class="{active: currentView == 'SupermeleeSettings'}" v-on:click="currentView = 'SupermeleeSettings'" href="#">Paramétrage</a></li>
-              <li><a :class="{disabled: !ready, active: currentView == 'SupermeleePlay' && tournamentIndex == 0}" v-on:click="go(0)" href="#">Concours</a></li>
+              <li><a :class="{disabled: !ready, active: currentView == 'SupermeleePlay'}" v-on:click="go(0)" href="#">Concours</a></li>
             </ul>
           </div>
         </div>
       </nav>
       <keep-alive>
-        <component v-bind:is="currentView" :tournamentIndex="tournamentIndex"></component>
+        <component v-bind:is="currentView"></component>
       </keep-alive>
     </div>
   </div>
@@ -26,12 +26,11 @@ import SupermeleePlay from './SupermeleePlay'
 export default {
   data () {
     return {
-      currentView: 'SupermeleeSettings',
-      tournamentIndex: 0
+      currentView: 'SupermeleeSettings'
     }
   },
   computed: mapGetters({
-    'ready': 'supermeleeReady'
+    ready: 'supermeleeReady'
   }),
   components: {
     SupermeleeSettings,
@@ -39,7 +38,6 @@ export default {
   },
   methods: {
     go: function (index) {
-      this.tournamentIndex = index
       this.currentView = this.ready ? 'SupermeleePlay' : this.currentView
     }
   }

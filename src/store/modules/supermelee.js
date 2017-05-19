@@ -7,20 +7,24 @@ var thresholdGames = 0
 const state = JSON.parse(window.localStorage.getItem('playtanque_supermelee')) ||
   {
     'ready': false,
+    'loading': false,
     'nbGroups': 3,
     'nbRounds': 4,
     'players': [
       [], [], []
     ],
     'tournament': [],
-    'uniqueness': [{'nb': 12, 'teams': [[[2, 8, 4], [1, 9, 5], [0, 10, 6], [3, 11, 7]], [[2, 9, 6], [1, 8, 7], [0, 11, 4], [3, 10, 5]], [[0, 8, 5], [3, 9, 4], [1, 11, 6], [2, 10, 7]], [[2, 11, 5], [3, 8, 6], [1, 10, 4], [0, 9, 7]]]}, {'nb': 18, 'teams': [[[0, 12, 6], [5, 13, 7], [1, 14, 8], [4, 15, 9], [3, 16, 10], [2, 17, 11]], [[1, 12, 7], [3, 13, 6], [2, 14, 9], [5, 15, 8], [0, 16, 11], [4, 17, 10]], [[2, 12, 8], [4, 13, 11], [0, 14, 7], [5, 16, 6], [1, 15, 10], [3, 17, 9]], [[1, 13, 9], [2, 15, 6], [5, 12, 10], [3, 14, 11], [4, 16, 7], [0, 17, 8]]]}, {'nb': 21, 'teams': [[[1, 14, 7], [4, 15, 8], [2, 16, 9], [6, 17, 10], [0, 18, 11], [3, 19, 12], [5, 20, 13]], [[3, 14, 8], [5, 15, 7], [4, 16, 10], [6, 18, 9], [2, 17, 11], [0, 19, 13], [1, 20, 12]], [[2, 14, 10], [0, 15, 9], [5, 16, 8], [6, 19, 7], [4, 17, 12], [1, 18, 13], [3, 20, 11]], [[1, 15, 10], [5, 14, 9], [0, 16, 7], [4, 19, 11], [3, 17, 13], [6, 20, 8], [2, 18, 12]]]}, {'nb': 24, 'teams': [[[7, 16, 8], [6, 17, 9], [0, 18, 10], [4, 19, 11], [1, 20, 12], [2, 21, 13], [3, 22, 14], [5, 23, 15]], [[2, 16, 9], [7, 17, 10], [6, 18, 8], [1, 19, 13], [4, 20, 14], [5, 21, 11], [3, 23, 12], [0, 22, 15]], [[7, 18, 9], [6, 16, 10], [1, 17, 8], [5, 19, 12], [0, 20, 11], [3, 21, 15], [4, 22, 13], [2, 23, 14]], [[7, 19, 14], [4, 16, 12], [3, 17, 11], [1, 18, 15], [5, 20, 8], [2, 22, 10], [0, 21, 9], [6, 23, 13]]]}]
+    'uniqueness': [{'nb': 24, 'teams': [[[5, 19, 11], [4, 17, 9], [2, 18, 10], [7, 21, 13], [0, 16, 8], [6, 23, 15], [1, 20, 12], [3, 22, 14]], [[4, 18, 8], [7, 19, 12], [3, 23, 13], [5, 22, 15], [0, 21, 14], [6, 20, 11], [1, 17, 10], [2, 16, 9]], [[2, 21, 12], [6, 16, 10], [3, 17, 8], [5, 18, 9], [4, 23, 14], [0, 20, 15], [1, 19, 13], [7, 22, 11]], [[0, 23, 9], [1, 21, 15], [2, 22, 13], [3, 16, 11], [4, 19, 10], [6, 18, 12], [7, 17, 14], [5, 20, 8]]], 'games': [[[0, 1], [2, 3], [4, 5], [6, 7]], [[0, 1], [2, 3], [4, 5], [6, 7]], [[0, 2], [1, 4], [3, 6], [5, 7]], [[0, 1], [2, 3], [4, 6], [5, 7]]]}]
   }
 
 // getters
 const getters = {
   supermelee: state => state,
   supermeleeReady: state => state.ready,
+  supermeleeNbGroups: state => state.nbGroups,
+  supermeleeLoading: state => state.loading,
   supermeleeTournament: state => state.tournament,
+  supermeleeTeams: state => state.tournament.teams,
   combinations: () => {
     var indices = []
     var lengths = []
@@ -64,7 +68,7 @@ const getters = {
     let uniqueComb = state.uniqueness.filter(function (obj) {
       return obj.nb === nbplayers
     })
-    if (uniqueComb.length > 0) {
+    if (uniqueComb.length > 0 && typeof uniqueComb[0].teams !== 'undefined') {
       return uniqueComb[0].teams.map((round) => {
         return round.map((team) => {
           return team.map((player) => {
@@ -77,28 +81,11 @@ const getters = {
     }
   },
   getGamesFromUniqueness: state => () => {
-    return false
-    // let correspondances = []
-    // for (let group of state.players) {
-    //   for (let player of group) {
-    //     correspondances.push(player)
-    //   }
-    // }
-    // let nbplayers = state.players[0].length * state.nbGroups
-    // let uniqueComb = state.uniqueness.filter(function (obj) {
-    //   return obj.nb === nbplayers
-    // })
-    // if (uniqueComb.length > 0) {
-    //   return uniqueComb[0].teams.map((round) => {
-    //     return round.map((team) => {
-    //       return team.map((player) => {
-    //         return correspondances[player]
-    //       })
-    //     })
-    //   })
-    // } else {
-    //   return false
-    // }
+    let nbplayers = state.players[0].length * state.nbGroups
+    let uniqueComb = state.uniqueness.filter(function (obj) {
+      return obj.nb === nbplayers
+    })
+    return uniqueComb.length > 0 && typeof uniqueComb[0].games !== 'undefined' ? uniqueComb[0].games : false
   },
   uniqueTeams: state => (tolerance) => {
     var ret = false
@@ -118,7 +105,6 @@ const getters = {
     function isUsed (usedRound, players) {
       for (let i = 0; i < players.length; i++) {
         if (usedRound.indexOf(players[i]) !== -1) {
-          // console.log(players[i] + ' joue déjà sur ce tour ' + usedRound.slice(0))
           return true
         }
       }
@@ -155,7 +141,6 @@ const getters = {
           if (j !== i) {
             if (playingWith[players[i]].indexOf(players[j]) !== -1) {
               if (countIndexesOf(playingWith[players[i]], players[j]) > tolerance) {
-                // console.log(players[i] + ' joue déjà plus de ' + tolerance + ' fois avec joueur ' + players[j])
                 return true
               }
             }
@@ -193,7 +178,6 @@ const getters = {
         }
       }
       for (i = 0; i < state.nbRounds; i++) {
-        // console.log('tour ' + i)
         equipes[i] = []
         used[i] = [] // joueurs déjà utilisés pour ce tour.
         getters.shuffle(tmp)
@@ -209,7 +193,6 @@ const getters = {
               testPlayingWith([tmp[j]].concat(comb[k])) === false
             ) {
               addToTeam(equipes[i][j], comb[k])
-              // console.log('joueurs ' + JSON.stringify(comb[k]) + ' ajoutés à team ' + j + ' avec joueur ' + tmp[j])
               addPlayingWith([tmp[j]].concat(comb[k]))
               addUsed(used[i], comb[k])
               break
@@ -253,7 +236,6 @@ const getters = {
     function isUsed (rounds, teamIndex) {
       for (let i = 0; i < rounds.length; i++) {
         if (rounds[i].indexOf(teamIndex) !== -1) {
-          // console.log('team ' + teamIndex + ' joue déjà sur ce tour')
           return true
         }
       }
@@ -261,13 +243,10 @@ const getters = {
     }
 
     function testPlayingAgainst (players) {
-      console.log('testPlayingAgainst ' + tolerance)
       for (let i = 0; i < players.length; i++) {
         for (let j = players.length - 1; j >= 0; j--) {
           if (j !== i) {
-            console.log(countIndexesOf(playingAgainst[players[i]], players[j]) + '>' + tolerance)
             if (countIndexesOf(playingAgainst[players[i]], players[j]) > tolerance) {
-              // console.log(players[i] + ' joue déjà ' + (tolerance + 1) + ' fois contre joueur ' + players[j])
               return true
             }
           }
@@ -292,7 +271,6 @@ const getters = {
       let equipeIndex = 0
       while (equipeIndex < teams.length) {
         equipeIndex = 0
-        console.log('numeroMatch ' + numeroMatch)
         if (typeof roundGames[numeroMatch] === 'undefined') { // La première équipe peut être n'importe laquelle non déjà utilisée
           while (isUsed(matchs.concat(roundGames), equipeIndex)) {
             equipeIndex++
@@ -300,14 +278,12 @@ const getters = {
           if (equipeIndex < teams.length) {
             roundGames[numeroMatch] = []
             roundGames[numeroMatch].push(equipeIndex)
-            // console.log('ajout equipe ' + equipeIndex, teams[equipeIndex])
           }
         } else { // Pour la deuxième, on reteste tout le monde
           opponentIndex = 0
           while (opponentIndex < teams.length) {
             if (!isUsed(matchs.concat(roundGames), opponentIndex)) {
               if (!testPlayingAgainst(teams[opponentIndex])) {
-                // console.log('ajout adversaire ' + opponentIndex, teams[opponentIndex])
                 roundGames[numeroMatch].push(opponentIndex)
                 addPlayingAgainst(teams[roundGames[numeroMatch][0]], teams[opponentIndex])
                 numeroMatch++
@@ -333,7 +309,6 @@ const getters = {
         }
       }
       for (roundIterator = 0; roundIterator < state.nbRounds; roundIterator++) {
-        console.log('TOUR ' + roundIterator)
         matchs[roundIterator] = []
         res = false
         while (res === false && thresholdRound < 5) { // state.players[0].length * 100
@@ -349,11 +324,10 @@ const getters = {
       }
       return matchs
     }
-    while (ret === false && threshold < 5) { // state.players[0].length * 100
+    while (ret === false && threshold < 20) { // state.players[0].length * 100
       ret = get()
       threshold++
     }
-    console.log(playingAgainst)
     return ret
   },
   shuffle (a) {
@@ -406,45 +380,57 @@ const actions = {
     commit('setSupermelee', ['players', a])
   },
 
-  saveUniqueness ({ commit }, equipes) {
+  saveUniqueness ({ commit }, [teams, games]) {
     let correspondances = []
     for (let group of state.players) {
       for (let player of group) {
         correspondances.push(player)
       }
     }
-    let tmp = equipes.map((round) => {
+    let tmpTeams = teams.map((round) => {
       return round.map((team) => {
         return team.map((player) => {
           return parseInt(Object.keys(correspondances).find(key => correspondances[key] === player))
         })
       })
     })
-
-    commit('addSupermeleeUniqueness', tmp)
+    commit('addSupermeleeUniqueness', [tmpTeams, games])
   },
 
   initSupermelee ({ state, commit, getters, dispatch }) {
     console.log('initSupermelee')
-    thresholdTeams = 0
-    var equipes = getters.getTeamsFromUniqueness()
-    console.log(equipes)
-    while (equipes === false && thresholdTeams < state.players[0].length) {
-      threshold = 0
-      equipes = getters.uniqueTeams(thresholdTeams++)
-      console.log('equipes trouvées avec un seuil ' + (thresholdTeams - 1), equipes)
-    }
-    if (thresholdTeams === 1) {
-      dispatch('saveUniqueness', equipes)
-    }
-    thresholdGames = 0
+    let uniquenessThreshold = 0
+    var teams = getters.getTeamsFromUniqueness()
     var games = getters.getGamesFromUniqueness()
-    while (games === false && thresholdGames < 2) {
-      threshold = 0
-      console.log('TOLERANCE ' + thresholdGames)
-      games = getters.uniqueGames(equipes, thresholdGames++)
+    if (teams === false || games === false) {
+      while (uniquenessThreshold < 2000) {
+        teams = false
+        games = false
+        thresholdTeams = 0
+        while (teams === false && thresholdTeams < state.players[0].length) {
+          threshold = 0
+          teams = getters.uniqueTeams(thresholdTeams++)
+        }
+        thresholdGames = 0
+        while (games === false && thresholdGames < 2) {
+          threshold = 0
+          games = getters.uniqueGames(teams, thresholdGames++)
+        }
+        if (thresholdTeams === 1 && thresholdGames === 1) {
+          dispatch('saveUniqueness', [teams, games])
+          break
+        } else {
+          uniquenessThreshold++
+        }
+      }
     }
+    console.log(teams)
     console.log(games)
+    commit('setSupermelee', ['tournament', {
+      teams: teams,
+      games: games
+    }])
+    commit('setSupermelee', ['loading', false])
   },
 
   updateSupermeleeGame ({ state, commit, dispatch }, { tournament, round, game, index, value }) {
@@ -548,10 +534,11 @@ const mutations = {
     state.players[group].splice(newIndex, 0, movedItem)
   },
 
-  addSupermeleeUniqueness (state, value) {
+  addSupermeleeUniqueness (state, [teams, games]) {
     state.uniqueness.push({
       nb: state.players[0].length * state.nbGroups,
-      combinations: value
+      teams: teams,
+      games: games
     })
   },
 
