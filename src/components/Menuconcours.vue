@@ -1,7 +1,7 @@
 <template>
   <header class="header" id="header">
     <nav>
-      <a href="/" class="navbar-brand">sandbox</a>
+      <a href="/" class="navbar-brand">Playtanque</a>
       <router-link to="/joueurs">Joueurs</router-link>
       <router-link to="/consolante">Consolante</router-link>
       <router-link to="/supermelee">Super-Mêlée</router-link>
