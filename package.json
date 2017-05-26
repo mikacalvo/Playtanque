@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "node build/dev-server.js",
     "build": "node build/build.js",
-    "deploy": "cp -R dist/* ../../html",
+    "deploy": "cp -R dist/* ../html/",
     "lint": "eslint --ext .js,.vue src"
   },
   "dependencies": {
