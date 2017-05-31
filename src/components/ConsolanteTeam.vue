@@ -9,16 +9,15 @@ export default {
   props: ['team', 'index'],
   components: { Team },
   methods: {
-    move (evt) {
-      if (evt.to !== evt.from && evt.to.children.length >= this.$store.state.consolante.nbPlayers) {
-        return false
-      }
-    },
     reorder ({oldIndex, newIndex}) {
-      this.$store.commit('moveConsolantePlayer', [this.index, oldIndex, newIndex])
+      console.log('reorder')
+      console.log(oldIndex, newIndex)
+      // this.$store.commit('moveConsolantePlayer', [this.index, oldIndex, newIndex])
     },
     transfer (evt) {
-      this.$store.dispatch('changeConsolantePlayerTeam', [parseInt(evt.from.dataset.index), evt.oldIndex, parseInt(evt.to.dataset.index), evt.newIndex])
+      console.log('transfer')
+      console.log(evt)
+      // this.$store.dispatch('changeConsolantePlayerTeam', [parseInt(evt.from.dataset.index), evt.oldIndex, parseInt(evt.to.dataset.index), evt.newIndex])
     }
   }
 }

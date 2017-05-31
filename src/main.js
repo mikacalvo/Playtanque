@@ -5,12 +5,15 @@ window.jQuery = window.$ = jQuery
 
 import 'babel-polyfill'
 import Vue from 'vue'
+import VueFloatLabel from 'vue-float-label'
 import store from './store'
 import router from './router'
 import App from './components/App'
 
 require('bootstrap-sass')
 Vue.config.productionTip = false
+
+Vue.use(VueFloatLabel)
 
 import Sortable from 'sortablejs'
 Vue.directive('sortable', {

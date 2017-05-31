@@ -3,49 +3,34 @@
     <div class="side-menu sidebar">
       <form class="form-horizontal" action="">
         <fieldset>
-          <div class="">
-            <label for="nbTeams" class="control-label">
-              Nombre d'équipes
-            </label>
-            <input id="nbTeams" name="nbTeams" type="number" class="form-control" @change="doneEdit" :value="consolante.nbTeams" />
-          </div>
-          <div class="">
-            <label for="nbPlayers" class="control-label">
-              Nombre de joueurs par équipe
-            </label>
+          <div style="padding:10px">
             <div class="btn-group" data-toggle="buttons">
               <label class="btn" :class="{active: consolante.nbPlayers == 1}" @click="doneEdit">
-                <input type="radio" name="nbPlayers" id="nbPlayers1" autocomplete="off" value="1" >1
+                <input type="radio" name="nbPlayers" id="nbPlayers1" autocomplete="off" value="1" >Simple
                 <span class="glyphicon glyphicon-ok"></span>
               </label>
               <label class="btn" :class="{active: consolante.nbPlayers == 2}" @click="doneEdit">
-                <input type="radio" name="nbPlayers" id="nbPlayers2" autocomplete="off" value="2" >2
+                <input type="radio" name="nbPlayers" id="nbPlayers2" autocomplete="off" value="2" >Doublette
                 <span class="glyphicon glyphicon-ok"></span>
               </label>
               <label class="btn" :class="{active: consolante.nbPlayers == 3}" @click="doneEdit">
-                <input type="radio" name="nbPlayers" id="nbPlayers3" autocomplete="off" value="3" >3
+                <input type="radio" name="nbPlayers" id="nbPlayers3" autocomplete="off" value="3" >Triplette
                 <span class="glyphicon glyphicon-ok"></span>
               </label>
             </div>
           </div>
+          <div style="padding:10px">
+            <float-label style="display: inline-block;">
+              <input type="number" placeholder="Nombre d'équipes" @change="doneEdit" :value="consolante.nbTeams" />
+            </float-label>
+          </div>
         </fieldset>
       </form>
 
-      <div>
-        <div class="search-wrapper">
-          <input type="text" class="form-control" placeholder="Recherche" v-model="search" @keydown.esc="search=''">
-          <span class="glyphicon glyphicon-search" v-show="search === ''"></span>
-          <span class="glyphicon glyphicon-remove btn" v-show="search !== ''" @click="search = ''"></span>
-        </div>
-      </div>
-
+      <h3 v-show="unfitPlayers.length > 0">Joueurs à équiper</h3>
       <ul class="players-list">
-        <li class="player" v-for="(player, index) in filteredPlayers" :class="{ completed: player.playing }">
+        <li class="player" v-for="(player, index) in unfitPlayers">
           <div class="view">
-            <input class="toggle"
-              type="checkbox"
-              :checked="isPlaying(player)"
-              @change="toggleFromTournament(player)">
             <label v-text="player.name"></label>
           </div>
         </li>
@@ -53,6 +38,8 @@
     </div>
 
     <div class="side-body">
+      <morphsearch :players="players" :tournament="consolante"></morphsearch>
+      <br>
       <p>
         <small>Rappel : pour éviter un concours avec des tirages blancs, le nombre d'équipes doit être un multiple de 8 : 16, 32, 64, 128.</small>
       </p>
@@ -69,41 +56,16 @@
 <script>
 import { mapMutations, mapGetters, mapActions } from 'vuex'
 import ConsolanteTeam from './ConsolanteTeam.vue'
-import Fuse from 'fuse.js'
+import Morphsearch from './Morphsearch.vue'
 
 export default {
-  components: { ConsolanteTeam },
-  data () {
-    return {
-      search: '',
-      options: {
-        shouldSort: true,
-        threshold: 0.6,
-        location: 0,
-        distance: 30,
-        maxPatternLength: 32,
-        minMatchCharLength: 1,
-        keys: [
-          'name'
-        ]
-      },
-      fuse: null
-    }
-  },
-  computed: {
-    ...mapGetters({
-      consolante: 'consolante',
-      players: 'allPlayers',
-      teams: 'consolanteTeams'
-    }),
-    filteredPlayers () {
-      if (this.search !== '') {
-        return this.fuse.search(this.search)
-      } else {
-        return this.players
-      }
-    }
-  },
+  components: { ConsolanteTeam, Morphsearch },
+  computed: mapGetters({
+    consolante: 'consolante',
+    players: 'allPlayers',
+    unfitPlayers: 'consolanteUnfitPlayers',
+    teams: 'consolanteTeams'
+  }),
   watch: {
     teams: function () {
       var ready = true
@@ -123,8 +85,7 @@ export default {
   },
   methods: {
     ...mapMutations([
-      'toggleAll',
-      'clearCompleted'
+      'toggleAll'
     ]),
     ...mapActions([
       'shuffleConsolante'
@@ -138,21 +99,30 @@ export default {
       }
       const key = input.name
       const value = input.value ? parseInt(input.value.trim()) : ''
+      console.log([key, value])
       this.$store.dispatch('editConsolante', [key, value])
     },
     isPlaying (player) {
-      return !this.teams.every(team => team.every(teamPlayer => teamPlayer.id !== player.id))
+      return !this.teams.every(team => team.every(teamPlayer => teamPlayer.id !== player.id)) || !this.unfitPlayers.every(p => p.id !== player.id)
     },
     toggleFromTournament (player) {
       if (this.isPlaying(player)) {
-        this.$store.commit('removeConsolantePlayer', player.id)
+        this.$store.dispatch('removeConsolantePlayer', player.id)
       } else {
         this.$store.dispatch('addToConsolante', player)
       }
+    },
+    move (evt) {
+      if (evt.to !== evt.from && evt.to.children.length >= this.consolante.nbPlayers) {
+        return false
+      }
+    },
+    reorder ({oldIndex, newIndex}) {
+      console.log('reorder')
+    },
+    transfer (evt) {
+      console.log('transfer')
     }
-  },
-  created () {
-    this.fuse = new Fuse(this.players, this.options)
   }
 }
 </script>
@@ -197,8 +167,10 @@ export default {
     margin: 5px 0 0 30px;
     width: 60px;
   }
-  .side-menu .btn-group {
-    padding: 5px 0 10px 30px;
+  .side-menu .btn-group label {
+    display: block;
+    width: 100%;
+    text-align: left;
   }
   .side-menu label {
     padding-left: 10px;

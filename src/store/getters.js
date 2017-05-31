@@ -6,6 +6,12 @@ export const consolanteTeams = state => {
   })
 }
 
+export const consolanteUnfitPlayers = state => {
+  return state.consolante.players.map((player) => {
+    return state.players.all.find(x => x.id === player)
+  })
+}
+
 export const supermeleePlayers = state => {
   return state.supermelee.players.map((group) => {
     return group.map((player) => {

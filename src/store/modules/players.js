@@ -69,7 +69,7 @@ const mutations = {
     state.all = players
   },
 
-  addPlayer (state, { text }) {
+  addPlayer (state, text) {
     state.all.push({
       id: state.all.length + 1,
       name: text,
